@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { User, Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import screenImg from '../assets/screen.png';
 
 const Navbar = () => {
@@ -13,46 +14,48 @@ const Navbar = () => {
 
         {/* Logo */}
         <div className="flex items-center">
-          <div className="w-14 h-10 sm:w-16 sm:h-12 flex items-center justify-center overflow-hidden">
-            <img
-              src={screenImg}
-              alt="BookLeaf"
-              className="w-full h-full object-contain"
-            />
-          </div>
+          <Link to="/">
+            <div className="w-14 h-10 sm:w-16 sm:h-12 flex items-center justify-center overflow-hidden">
+              <img
+                src={screenImg}
+                alt="BookLeaf"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-medium text-[#6e6357]">
 
-          <a
-            href="#home"
+          <Link
+            to="/"
             className="hover:text-[#1c1917] transition-colors whitespace-nowrap"
           >
             Home
-          </a>
+          </Link>
 
-          <a
-            href="#about"
+          <Link
+            to="/about"
             className="text-[#1c1917] font-semibold relative py-1 whitespace-nowrap"
           >
             About & Process
             <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#8c6d48] rounded-full"></span>
-          </a>
+          </Link>
 
-          <a
-            href="#authors"
+          <Link
+            to="/authors"
             className="hover:text-[#1c1917] transition-colors whitespace-nowrap"
           >
             For Authors
-          </a>
+          </Link>
 
-          <a
-            href="#support"
+          <Link
+            to="/support"
             className="hover:text-[#1c1917] transition-colors whitespace-nowrap"
           >
             Support
-          </a>
+          </Link>
 
         </div>
 
@@ -60,19 +63,28 @@ const Navbar = () => {
         <div className="flex items-center gap-2 sm:gap-3">
 
           {/* Sign In */}
-          <button className="hidden sm:block text-sm font-medium text-[#4a423a] hover:text-[#1c1917] px-1 whitespace-nowrap">
+          <Link
+            to="/login"
+            className="hidden sm:block text-sm font-medium text-[#4a423a] hover:text-[#1c1917] px-1 whitespace-nowrap"
+          >
             Sign In
-          </button>
+          </Link>
 
           {/* CTA */}
-          <button className="bg-[#22201e] hover:bg-[#11100f] text-[#f7f3ec] text-[10px] sm:text-xs font-bold tracking-wider px-3 sm:px-4 py-2 rounded-sm uppercase transition-colors shadow-sm whitespace-nowrap">
+          <Link
+            to="/login"
+            className="bg-[#22201e] hover:bg-[#11100f] text-[#f7f3ec] text-[10px] sm:text-xs font-bold tracking-wider px-3 sm:px-4 py-2 rounded-sm uppercase transition-colors shadow-sm whitespace-nowrap"
+          >
             ENTER AUTHOR PORTAL
-          </button>
+          </Link>
 
           {/* User Profile */}
-          <button className="hidden sm:flex w-8 h-8 rounded-full bg-[#eae2d5] hover:bg-[#dfd5c5] items-center justify-center text-[#2c2825] transition-colors">
+          <Link
+            to="/profile"
+            className="hidden sm:flex w-8 h-8 rounded-full bg-[#eae2d5] hover:bg-[#dfd5c5] items-center justify-center text-[#2c2825] transition-colors"
+          >
             <User className="w-4 h-4" />
-          </button>
+          </Link>
 
           {/* Mobile Menu */}
           <button
@@ -94,47 +106,55 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-[#f7f3ec] border-b border-[#e8dfd1] px-4 py-3 flex flex-col gap-2 text-sm font-medium text-[#6e6357]">
 
-          <a
-            href="#home"
+          <Link
+            to="/"
             onClick={() => setIsMobileMenuOpen(false)}
             className="hover:text-[#1c1917] transition-colors py-1"
           >
             Home
-          </a>
+          </Link>
 
-          <a
-            href="#about"
+          <Link
+            to="/about"
             onClick={() => setIsMobileMenuOpen(false)}
             className="text-[#1c1917] font-semibold py-1 border-l-2 border-[#8c6d48] pl-2"
           >
             About & Process
-          </a>
+          </Link>
 
-          <a
-            href="#authors"
+          <Link
+            to="/authors"
             onClick={() => setIsMobileMenuOpen(false)}
             className="hover:text-[#1c1917] transition-colors py-1"
           >
             For Authors
-          </a>
+          </Link>
 
-          <a
-            href="#support"
+          <Link
+            to="/support"
             onClick={() => setIsMobileMenuOpen(false)}
             className="hover:text-[#1c1917] transition-colors py-1"
           >
             Support
-          </a>
+          </Link>
 
           <div className="pt-2 border-t border-[#e8dfd1] flex items-center justify-between sm:hidden">
 
-            <button className="text-sm font-medium text-[#4a423a] hover:text-[#1c1917]">
+            <Link
+              to="/login"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-[#4a423a] hover:text-[#1c1917]"
+            >
               Sign In
-            </button>
+            </Link>
 
-            <button className="w-8 h-8 rounded-full bg-[#eae2d5] flex items-center justify-center text-[#2c2825]">
+            <Link
+              to="/profile"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-8 h-8 rounded-full bg-[#eae2d5] flex items-center justify-center text-[#2c2825]"
+            >
               <User className="w-4 h-4" />
-            </button>
+            </Link>
 
           </div>
         </div>
