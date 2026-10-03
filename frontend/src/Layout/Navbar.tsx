@@ -43,15 +43,16 @@ const Navbar = () => {
             <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#8c6d48] rounded-full"></span>
           </Link>
 
+       
           <Link
-            to="/authors"
-            className="hover:text-[#1c1917] transition-colors whitespace-nowrap"
-          >
-            For Authors
-          </Link>
+  to="/author/dashboard"
+  className="bg-[#22201e] hover:bg-[#11100f] text-[#f7f3ec] text-[10px] sm:text-xs font-bold tracking-wider px-3 sm:px-4 py-2 rounded-sm uppercase transition-colors shadow-sm whitespace-nowrap"
+>
+  For Authors
+</Link>
 
           <Link
-            to="/support"
+             to="/admin/dashboard"
             className="hover:text-[#1c1917] transition-colors whitespace-nowrap"
           >
             Support
