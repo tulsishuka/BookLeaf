@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   BookOpen,
@@ -5,113 +7,152 @@ import {
   Ticket,
   User,
   LogOut,
-} from 'lucide-react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+} from "lucide-react";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+interface LoggedInUser {
+  id?: string;
+  authorId?: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+  role?: "author" | "admin";
+}
 
 const AuthorLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState<LoggedInUser | null>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+
+    if (!userData) return;
+
+    try {
+      const parsedUser: LoggedInUser = JSON.parse(userData);
+      setUser(parsedUser);
+    } catch (error) {
+      console.error("Unable to read user data:", error);
+    }
+  }, []);
 
   const navItems = [
     {
-      label: 'Dashboard',
+      label: "Dashboard",
+      path: "/author/dashboard",
       icon: LayoutDashboard,
-      path: '/author/dashboard',
     },
     {
-      label: 'My Books',
+      label: "My Books",
+      path: "/author/books",
       icon: BookOpen,
-      path: '/author/books',
     },
     {
-      label: 'Submit Query',
+      label: "Submit Query",
+      path: "/author/submit-query",
       icon: Send,
-      path: '/author/submit-query',
     },
     {
-      label: 'My Tickets',
+      label: "My Tickets",
+      path: "/author/tickets",
       icon: Ticket,
-      path: '/author/tickets',
     },
     {
-      label: 'Account',
+      label: "Account",
+      path: "/author/account",
       icon: User,
-      path: '/author/account',
     },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    navigate("/login", {
+      replace: true,
+    });
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
-    <div className="flex min-h-screen w-full bg-[#FDFBF7]">
+    <div className="h-screen w-full bg-[#F7F3EC] flex overflow-hidden">
 
-      {/* ================= SIDEBAR ================= */}
-      <aside className="w-64 shrink-0 bg-[#F8F5EE] border-r border-gray-200 flex flex-col justify-between p-6">
+      {/* SIDEBAR */}
+      <aside
+        className="
+          h-screen
+          w-64
+          shrink-0
+          bg-[#F8F5EE]
+          border-r
+          border-gray-200
+          flex
+          flex-col
+          justify-between
+          p-6
+        "
+      >
 
-        {/* ================= TOP SECTION ================= */}
+        {/* TOP */}
         <div>
 
-          {/* Logo / Header */}
-          <div className="flex items-center justify-between pb-8 mb-6 border-b border-gray-200/60">
+          {/* LOGO */}
+          <div className="flex items-center gap-3 mb-10">
 
-            {/* Bookleaf Logo */}
-            <Link
-              to="/author/dashboard"
-              className="flex items-center gap-2"
-            >
-              <div className="w-7 h-7 rounded-full bg-amber-800 flex items-center justify-center text-white font-serif font-bold text-sm">
-                B
-              </div>
+            <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-serif text-lg">
+              B
+            </div>
 
-              <span className="font-serif font-bold text-gray-900 tracking-wide">
-                Bookleaf
-              </span>
-            </Link>
+            <div>
+              <h1 className="font-serif text-lg text-[#1c1917]">
+                BookLeaf
+              </h1>
 
-            <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider text-right leading-tight">
-              BOOKLEAF
-              <br />
-              AUTHOR PORTAL
+              <p className="text-[10px] uppercase tracking-[0.18em] text-[#9c6a3a]">
+                Author Portal
+              </p>
             </div>
 
           </div>
 
-          {/* Section Heading */}
-          <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-4 px-3">
-            AUTHOR'S DASHBOARD
-          </div>
-
-          {/* ================= NAVIGATION ================= */}
-          <nav className="space-y-1">
+          {/* NAVIGATION */}
+          <nav className="space-y-2">
 
             {navItems.map((item) => {
               const Icon = item.icon;
-
-              const isActive =
-                location.pathname === item.path ||
-                (
-                  item.path === '/author/books' &&
-                  location.pathname.startsWith('/author/books/')
-                );
+              const active = isActive(item.path);
 
               return (
                 <Link
-                  key={item.label}
+                  key={item.path}
                   to={item.path}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-black text-white'
-                      : 'text-gray-700 hover:bg-gray-200/50'
-                  }`}
+                  className={`
+                    flex items-center gap-3
+                    px-4 py-3
+                    rounded-xl
+                    text-sm
+                    transition-all
+                    ${
+                      active
+                        ? "bg-black text-white"
+                        : "text-[#574f46] hover:bg-[#ede7dc]"
+                    }
+                  `}
                 >
-
-                  <Icon
-                    className={`w-4 h-4 ${
-                      isActive
-                        ? 'text-white'
-                        : 'text-gray-600'
-                    }`}
-                  />
+                  <Icon className="w-4 h-4" />
 
                   <span>{item.label}</span>
-
                 </Link>
               );
             })}
@@ -120,60 +161,68 @@ const AuthorLayout = () => {
 
         </div>
 
-        {/* ================= SIDEBAR FOOTER ================= */}
-        <div className="pt-6 border-t border-gray-200/60">
 
-          {/* Folio Reference */}
-          <div className="flex items-center justify-between mb-1">
+        {/* BOTTOM USER */}
+        <div>
 
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-              FOLIO REFERENCE
-            </span>
+          <div className="border-t border-gray-200 pt-5">
 
-            <span className="text-[10px] font-mono text-gray-500">
-              #BL-1234
-            </span>
+            <div className="flex items-center gap-3 mb-4">
+
+              <div className="w-10 h-10 rounded-full bg-[#E8DED0] flex items-center justify-center text-[#6B4F35] font-serif">
+                {user?.name
+                  ? user.name.charAt(0).toUpperCase()
+                  : "A"}
+              </div>
+
+              <div className="min-w-0">
+
+                <p className="text-sm font-semibold text-[#2c2825] truncate">
+                  {user?.name || "Author"}
+                </p>
+
+                <p className="text-[11px] text-[#8b8176] truncate">
+                  {user?.email || "Author Account"}
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* LOGOUT */}
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="
+                w-full
+                flex
+                items-center
+                gap-3
+                px-4
+                py-3
+                rounded-xl
+                text-sm
+                text-[#574f46]
+                hover:bg-[#ede7dc]
+                transition
+              "
+            >
+              <LogOut className="w-4 h-4" />
+
+              <span>Logout</span>
+            </button>
 
           </div>
-
-          {/* User */}
-          <Link
-            to="/author/account"
-            className="block mb-4"
-          >
-            <h4 className="font-serif font-semibold text-gray-900 text-lg">
-              Riya Sharma
-            </h4>
-
-            <p className="text-xs text-gray-500">
-              Independent Author
-            </p>
-          </Link>
-
-          {/* Logout */}
-          <Link
-            to="/login"
-            className="w-full bg-gray-200/70 hover:bg-gray-200 text-gray-800 text-xs font-medium py-2 px-3 rounded flex items-center justify-center gap-2 transition-colors"
-          >
-
-            <LogOut className="w-3.5 h-3.5" />
-
-            <span>Not Sharma</span>
-
-          </Link>
 
         </div>
 
       </aside>
 
-      {/* ================= MAIN CONTENT ================= */}
-      <main className="flex-1 min-w-0 w-full overflow-y-auto">
 
-        <div className="w-full p-8">
+      {/* MAIN CONTENT */}
+      <main className="flex-1 min-w-0 h-screen overflow-y-auto">
 
-          <Outlet />
-
-        </div>
+        <Outlet />
 
       </main>
 
