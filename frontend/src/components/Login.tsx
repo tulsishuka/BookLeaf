@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Mail,
   Lock,
@@ -9,11 +10,63 @@ import {
 } from 'lucide-react';
 
 import loginImg from '../assets/l.png';
+import api from '../api/api';
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Authentication states
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleLogin = async (
+    e: FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await api.post('/auth/login', {
+        email,
+        password,
+      });
+
+      const {
+        token,
+        user,
+        redirectTo,
+      } = response.data;
+
+      // Save JWT token
+      localStorage.setItem('token', token);
+
+      // Save logged-in user
+      localStorage.setItem(
+        'user',
+        JSON.stringify(user)
+      );
+
+      // Redirect based on role
+      navigate(redirectTo);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error('Login error:', error);
+
+      setError(
+        error.response?.data?.message ||
+          'Unable to sign in. Please check your email and password.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full bg-[#f6f2ea] flex items-center justify-center px-4 py-8 sm:px-8">
@@ -93,7 +146,17 @@ const Login = () => {
             </div>
 
             {/* Form */}
-            <form className="space-y-5">
+            <form
+              onSubmit={handleLogin}
+              className="space-y-5"
+            >
+
+              {/* Error message */}
+              {error && (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                  {error}
+                </div>
+              )}
 
               {/* Email */}
               <div>
@@ -172,7 +235,9 @@ const Login = () => {
 
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
+                    onClick={() =>
+                      setShowPassword(!showPassword)
+                    }
                     className="
                       absolute
                       right-3.5
@@ -208,6 +273,7 @@ const Login = () => {
               {/* Login Button */}
               <button
                 type="submit"
+                disabled={loading}
                 className="
                   w-full
                   bg-[#1c1917]
@@ -224,10 +290,17 @@ const Login = () => {
                   shadow-sm
                   hover:shadow-md
                   transition-all
+                  disabled:opacity-60
+                  disabled:cursor-not-allowed
                 "
               >
-                <span>Sign In</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>
+                  {loading ? 'Signing in...' : 'Sign In'}
+                </span>
+
+                {!loading && (
+                  <ArrowRight className="w-4 h-4" />
+                )}
               </button>
 
             </form>
