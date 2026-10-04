@@ -1,5 +1,4 @@
 
-
 import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./Layout/Navbar";
@@ -12,17 +11,21 @@ import CTASection from "./Pages/CTASection";
 import LiteraryLifecycle from "./Pages/LiteraryLifecycle";
 
 import Login from "./components/Login";
+
 import AuthorLayout from "./Layout/AuthorLayout";
-import Dashboard from "./components/author/Dashboard";
 import MyBook from "./components/author/MyBook";
 import BookDetail from "./components/author/BookDetail";
 import SubmitQuery from "./components/author/SubmitQuery";
 import MyTickets from "./components/author/MyTickets";
 import AuthorProfile from "./components/author/AuthorProfile";
-import BooksCatalog from "./components/admin/BooksCatalog";
-import TicketQueue from "./components/admin/TicketQueue";
 
 import AdminLayout from "./Layout/AdminLayout";
+import BooksCatalog from "./components/admin/BooksCatalog";
+import TicketQueue from "./components/admin/TicketQueue";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import AuthDashboard from "./components/author/AuthDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 
 const HomePage = () => {
   return (
@@ -44,73 +47,30 @@ const App = () => {
   return (
     <Routes>
 
+      {/* PUBLIC */}
       <Route path="/" element={<HomePage />} />
 
       <Route path="/login" element={<Login />} />
 
 
+  <Route element={<ProtectedRoute allowedRole="author" />}>
+  <Route path="/author" element={<AuthorLayout />}>
+    <Route path="dashboard" element={<AuthDashboard />} />
+    <Route path="books" element={<MyBook />} />
+    <Route path="books/:bookId" element={<BookDetail />} />
+    <Route path="submit-query" element={<SubmitQuery />} />
+    <Route path="tickets" element={<MyTickets />} />
+    <Route path="account" element={<AuthorProfile />} />
+  </Route>
+</Route>
 
-      <Route path="/author" element={<AuthorLayout />}>
-
-        <Route
-          path="dashboard"
-          element={<Dashboard />}
-        />
-
-        <Route
-          path="books"
-          element={<MyBook />}
-        />
-
-        <Route
-          path="books/:bookId"
-          element={<BookDetail />}
-        />
-
-        <Route
-          path="submit-query"
-          element={<SubmitQuery />}
-        />
-
-        <Route
-          path="tickets"
-          element={<MyTickets />}
-        />
-
-        
-
-        <Route
-          path="account"
-          element={<AuthorProfile />}
-        />
-
-      </Route>
-<Route path="/admin" element={<AdminLayout />}>
-
-        <Route
-          path="dashboard"
-          element={<Dashboard />}
-        />
-
-        <Route
-          path="books"
-          element={<BooksCatalog />}
-        />
-
-      
-
-        <Route
-          path="tickets"
-          element={<TicketQueue />}
-        />
-
-        
-
-        
-
-      </Route>
-
-     
+<Route element={<ProtectedRoute allowedRole="admin" />}>
+  <Route path="/admin" element={<AdminLayout />}>
+    <Route path="dashboard" element={<AdminDashboard />} />
+    <Route path="books" element={<BooksCatalog />} />
+    <Route path="tickets" element={<TicketQueue />} />
+  </Route>
+</Route>
 
     </Routes>
   );
