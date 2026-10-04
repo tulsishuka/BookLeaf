@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 
 import User from "../models/User";
 import Book from "../models/Book";
-import { AuthRequest } from "../middlewares/authMiddleware";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -17,18 +16,18 @@ if (!JWT_SECRET) {
 | LOGIN
 |--------------------------------------------------------------------------
 */
-
 export const login = async (
   req: Request,
   res: Response
-) => {
+): Promise<void> => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({
+      res.status(400).json({
         message: "Email and password are required",
       });
+      return;
     }
 
     const user = await User.findOne({
@@ -36,9 +35,10 @@ export const login = async (
     });
 
     if (!user) {
-      return res.status(401).json({
+      res.status(401).json({
         message: "Invalid email or password",
       });
+      return;
     }
 
     const passwordMatch = await bcrypt.compare(
@@ -47,9 +47,10 @@ export const login = async (
     );
 
     if (!passwordMatch) {
-      return res.status(401).json({
+      res.status(401).json({
         message: "Invalid email or password",
       });
+      return;
     }
 
     const token = jwt.sign(
@@ -64,7 +65,7 @@ export const login = async (
       }
     );
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "Login successful",
 
       token,
@@ -87,7 +88,7 @@ export const login = async (
   } catch (error) {
     console.error("Login error:", error);
 
-    return res.status(500).json({
+    res.status(500).json({
       message: "Server error during login",
     });
   }
@@ -98,35 +99,36 @@ export const login = async (
 | GET CURRENT USER
 |--------------------------------------------------------------------------
 */
-
 export const getMe = async (
-  req: AuthRequest,
+  req: Request,
   res: Response
-) => {
+): Promise<void> => {
   try {
     if (!req.user) {
-      return res.status(401).json({
+      res.status(401).json({
         message: "Not authenticated",
       });
+      return;
     }
 
-    const user = await User.findById(req.user.userId).select(
-      "-password"
-    );
+    const user = await User.findById(
+      req.user.userId
+    ).select("-password");
 
     if (!user) {
-      return res.status(404).json({
+      res.status(404).json({
         message: "User not found",
       });
+      return;
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       user,
     });
   } catch (error) {
     console.error("Get me error:", error);
 
-    return res.status(500).json({
+    res.status(500).json({
       message: "Server error",
     });
   }
@@ -137,16 +139,16 @@ export const getMe = async (
 | AUTHOR DASHBOARD
 |--------------------------------------------------------------------------
 */
-
 export const getAuthorDashboard = async (
-  req: AuthRequest,
+  req: Request,
   res: Response
-) => {
+): Promise<void> => {
   try {
     if (!req.user?.authorId) {
-      return res.status(400).json({
+      res.status(400).json({
         message: "Author ID not found",
       });
+      return;
     }
 
     const author = await User.findOne({
@@ -155,9 +157,10 @@ export const getAuthorDashboard = async (
     }).select("-password");
 
     if (!author) {
-      return res.status(404).json({
+      res.status(404).json({
         message: "Author not found",
       });
+      return;
     }
 
     const books = await Book.find({
@@ -170,29 +173,29 @@ export const getAuthorDashboard = async (
 
     const totalCopiesSold = books.reduce(
       (total, book) =>
-        total + book.totalCopiesSold,
+        total + (book.totalCopiesSold || 0),
       0
     );
 
     const totalRoyaltyEarned = books.reduce(
       (total, book) =>
-        total + book.totalRoyaltyEarned,
+        total + (book.totalRoyaltyEarned || 0),
       0
     );
 
     const royaltyPaid = books.reduce(
       (total, book) =>
-        total + book.royaltyPaid,
+        total + (book.royaltyPaid || 0),
       0
     );
 
     const royaltyPending = books.reduce(
       (total, book) =>
-        total + book.royaltyPending,
+        total + (book.royaltyPending || 0),
       0
     );
 
-    return res.status(200).json({
+    res.status(200).json({
       author,
 
       stats: {
@@ -211,7 +214,7 @@ export const getAuthorDashboard = async (
       error
     );
 
-    return res.status(500).json({
+    res.status(500).json({
       message: "Server error",
     });
   }
@@ -222,11 +225,10 @@ export const getAuthorDashboard = async (
 | ADMIN DASHBOARD
 |--------------------------------------------------------------------------
 */
-
 export const getAdminDashboard = async (
-  req: AuthRequest,
+  req: Request,
   res: Response
-) => {
+): Promise<void> => {
   try {
     const authors = await User.find({
       role: "author",
@@ -237,33 +239,34 @@ export const getAdminDashboard = async (
     });
 
     const totalAuthors = authors.length;
+
     const totalBooks = books.length;
 
     const totalCopiesSold = books.reduce(
       (total, book) =>
-        total + book.totalCopiesSold,
+        total + (book.totalCopiesSold || 0),
       0
     );
 
     const totalRoyaltyEarned = books.reduce(
       (total, book) =>
-        total + book.totalRoyaltyEarned,
+        total + (book.totalRoyaltyEarned || 0),
       0
     );
 
     const totalRoyaltyPaid = books.reduce(
       (total, book) =>
-        total + book.royaltyPaid,
+        total + (book.royaltyPaid || 0),
       0
     );
 
     const totalRoyaltyPending = books.reduce(
       (total, book) =>
-        total + book.royaltyPending,
+        total + (book.royaltyPending || 0),
       0
     );
 
-    return res.status(200).json({
+    res.status(200).json({
       stats: {
         totalAuthors,
         totalBooks,
@@ -282,7 +285,7 @@ export const getAdminDashboard = async (
       error
     );
 
-    return res.status(500).json({
+    res.status(500).json({
       message: "Server error",
     });
   }

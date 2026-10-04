@@ -1,607 +1,947 @@
-import { useState } from 'react';
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  UserCheck,
-  Tag,
-  AlertTriangle,
-  Lock,
-  Send,
-  Sparkles,
-  Paperclip,
-  Copy,
-  MessageSquare,
-  CheckCircle2,
- 
-  ArrowRight,
+  Search,
+  Filter,
   RefreshCw,
-  Edit,
- 
+  AlertTriangle,
+  Clock,
+  ChevronRight,
+  Inbox,
 } from 'lucide-react';
 
+const API_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+type TicketStatus =
+  | 'Open'
+  | 'In Progress'
+  | 'Resolved'
+  | 'Closed';
+
+type TicketPriority =
+  | 'Critical'
+  | 'High'
+  | 'Medium'
+  | 'Low';
+
+type TicketCategory =
+  | 'Royalty & Payments'
+  | 'ISBN & Metadata Issues'
+  | 'Printing & Quality'
+  | 'Distribution & Availability'
+  | 'Book Status & Production Updates'
+  | 'General Inquiry';
+
+interface Book {
+  _id: string;
+  title: string;
+  isbn: string;
+  genre?: string;
+  publicationDate?: string;
+  status?: string;
+}
+
+interface AssignedAdmin {
+  _id: string;
+  name?: string;
+  email?: string;
+}
+
+interface Ticket {
+  _id: string;
+  authorId: string;
+  bookId?: Book | null;
+  subject: string;
+  description: string;
+  category: TicketCategory;
+  priority: TicketPriority;
+  status: TicketStatus;
+  assignedTo?: AssignedAdmin | null;
+  aiCategory?: string | null;
+  aiPriority?: string | null;
+  aiDraftResponse?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const TicketQueue = () => {
-  const [responseMsg, setResponseMsg] = useState('');
-  const [ticketStatus, setTicketStatus] = useState('Open');
-  const [ticketPriority, setTicketPriority] = useState('High');
-  const [ticketCategory, setTicketCategory] = useState('Royalty & Payments');
+  const navigate = useNavigate();
+
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] =
+    useState<'All' | TicketStatus>('All');
+
+  const [priorityFilter, setPriorityFilter] =
+    useState<'All' | TicketPriority>('All');
+
+  // ==================================================
+  // FETCH ALL USER QUERIES
+  // ==================================================
+
+  const fetchAllTickets = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error(
+          'Admin authentication token not found.'
+        );
+      }
+
+      const response = await fetch(
+        `${API_URL}/api/tickets/admin/all`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const contentType =
+        response.headers.get('content-type');
+
+      if (!contentType?.includes('application/json')) {
+        const text = await response.text();
+
+        console.error(
+          'SERVER RETURNED NON-JSON:',
+          text
+        );
+
+        throw new Error(
+          `Backend returned ${response.status} ${response.statusText} instead of JSON.`
+        );
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            'Failed to fetch submitted queries.'
+        );
+      }
+
+      const allTickets = Array.isArray(data)
+        ? data
+        : data.tickets || [];
+
+      setTickets(allTickets);
+    } catch (error) {
+      console.error(
+        'FETCH ALL TICKETS ERROR:',
+        error
+      );
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to load submitted queries.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllTickets();
+  }, []);
+
+  // ==================================================
+  // FILTER
+  // ==================================================
+
+  const filteredTickets = tickets.filter((ticket) => {
+    const searchValue =
+      search.trim().toLowerCase();
+
+    const matchesSearch =
+      !searchValue ||
+      ticket.subject
+        ?.toLowerCase()
+        .includes(searchValue) ||
+      ticket.description
+        ?.toLowerCase()
+        .includes(searchValue) ||
+      ticket.authorId
+        ?.toLowerCase()
+        .includes(searchValue) ||
+      ticket.category
+        ?.toLowerCase()
+        .includes(searchValue) ||
+      ticket.bookId?.title
+        ?.toLowerCase()
+        .includes(searchValue);
+
+    const matchesStatus =
+      statusFilter === 'All' ||
+      ticket.status === statusFilter;
+
+    const matchesPriority =
+      priorityFilter === 'All' ||
+      ticket.priority === priorityFilter;
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesPriority
+    );
+  });
+
+  // ==================================================
+  // DATE
+  // ==================================================
+
+  const formatDate = (date?: string) => {
+    if (!date) return '—';
+
+    return new Date(date).toLocaleDateString(
+      'en-IN',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }
+    );
+  };
+
+  const formatTime = (date?: string) => {
+    if (!date) return '';
+
+    return new Date(date).toLocaleTimeString(
+      'en-IN',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+      }
+    );
+  };
+
+  // ==================================================
+  // PRIORITY STYLE
+  // ==================================================
+
+  const getPriorityStyle = (
+    priority: TicketPriority
+  ) => {
+    switch (priority) {
+      case 'Critical':
+        return 'bg-red-100 text-red-700 border-red-200';
+
+      case 'High':
+        return 'bg-orange-100 text-orange-700 border-orange-200';
+
+      case 'Medium':
+        return 'bg-amber-100 text-amber-800 border-amber-200';
+
+      case 'Low':
+        return 'bg-gray-100 text-gray-600 border-gray-200';
+
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
+  };
+
+  // ==================================================
+  // STATUS STYLE
+  // ==================================================
+
+  const getStatusStyle = (
+    status: TicketStatus
+  ) => {
+    switch (status) {
+      case 'Open':
+        return 'bg-blue-100 text-blue-700';
+
+      case 'In Progress':
+        return 'bg-purple-100 text-purple-700';
+
+      case 'Resolved':
+        return 'bg-green-100 text-green-700';
+
+      case 'Closed':
+        return 'bg-gray-200 text-gray-600';
+
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
+  };
+
+  // ==================================================
+  // LOADING
+  // ==================================================
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFBF7] p-8">
+
+        <div className="flex items-center gap-3 mb-8">
+          <RefreshCw className="w-6 h-6 animate-spin text-gray-700" />
+
+          <div>
+            <h1 className="font-serif text-2xl font-bold text-gray-900">
+              Ticket Queue
+            </h1>
+
+            <p className="text-sm text-gray-500">
+              Fetching all author queries...
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5].map((item) => (
+            <div
+              key={item}
+              className="h-28 bg-[#F2EDE4] rounded-xl animate-pulse"
+            />
+          ))}
+        </div>
+
+      </div>
+    );
+  }
+
+  // ==================================================
+  // ERROR
+  // ==================================================
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-8">
+
+        <div className="max-w-lg w-full bg-white border border-red-200 rounded-xl p-8 text-center">
+
+          <AlertTriangle className="w-10 h-10 text-red-500 mx-auto mb-4" />
+
+          <h2 className="font-serif text-xl font-bold text-gray-900">
+            Unable to load queries
+          </h2>
+
+          <p className="text-sm text-red-600 mt-2">
+            {error}
+          </p>
+
+          <button
+            type="button"
+            onClick={fetchAllTickets}
+            className="mt-6 px-5 py-2.5 bg-black text-white rounded-lg text-xs font-semibold flex items-center gap-2 mx-auto"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Try Again
+          </button>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  // ==================================================
+  // PAGE
+  // ==================================================
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-6 lg:p-10 text-gray-800 font-sans space-y-6">
-      
-      {/* --- TOP NAV / BREADCRUMB --- */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200/80 pb-4">
-        <div className="flex items-center gap-2 text-xs font-mono text-gray-500 uppercase">
-          <span>TICKET INSPECTION</span>
-          <span>/</span>
-          <span className="text-gray-900 font-bold">#FL-10892</span>
-          <span>/</span>
-          <span>EDITORIAL DESK</span>
-        </div>
+    <div className="min-h-screen bg-[#FDFBF7] text-gray-800">
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="px-3 py-1.5 bg-white border border-gray-300 rounded text-xs font-semibold text-gray-700 hover:bg-gray-50 transition shadow-2xs flex items-center gap-1.5"
-          >
-            <UserCheck className="w-3.5 h-3.5 text-gray-500" />
-            <span>Assign</span>
-          </button>
+      {/* ================================================= */}
+      {/* HEADER */}
+      {/* ================================================= */}
 
-          <button
-            type="button"
-            className="px-3 py-1.5 bg-white border border-gray-300 rounded text-xs font-semibold text-gray-700 hover:bg-gray-50 transition shadow-2xs flex items-center gap-1.5"
-          >
-            <Tag className="w-3.5 h-3.5 text-gray-500" />
-            <span>Change Priority</span>
-          </button>
+      <div className="border-b border-gray-200 bg-[#FDFBF7]">
 
-          <button
-            type="button"
-            className="px-3 py-1.5 bg-white border border-gray-300 rounded text-xs font-semibold text-gray-700 hover:bg-gray-50 transition shadow-2xs flex items-center gap-1.5"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-gray-500" />
-            <span>Change Status</span>
-          </button>
+        <div className="px-8 py-7">
 
-          <button
-            type="button"
-            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-bold transition shadow-2xs flex items-center gap-1.5"
-          >
-            <Lock className="w-3.5 h-3.5" />
-            <span>Close Ticket</span>
-          </button>
-        </div>
-      </div>
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
 
-      {/* --- MAIN HEADER --- */}
-      <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-6 space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="bg-black text-white font-bold text-[10px] px-2 py-0.5 rounded uppercase">
-                TKT-10892
-              </span>
-              <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-                OPEN
-              </span>
-              <span className="bg-red-100 text-red-800 border border-red-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3 text-red-600" />
-                PRIORITY: HIGH
-              </span>
-              <span className="text-xs text-gray-500">Royalty & Payments</span>
-            </div>
-            
-            <h1 className="text-3xl font-serif font-bold text-gray-900">
-              Royalty Payment Missing
-            </h1>
-            
-            <p className="text-xs text-gray-600 mt-1 max-w-3xl leading-relaxed">
-              Quarterly disbursement reconciliation inquiry regarding Kindle & Print sales distribution for Q3 statement audit portal.
-            </p>
-          </div>
-
-          <div className="text-right text-xs space-y-1 bg-[#F2EDE4] p-3 rounded border border-gray-300/40 flex-shrink-0">
-            <div className="text-gray-500">
-              Created: <span className="font-semibold text-gray-900">03 Oct 2026, 10:14 AM</span>
-            </div>
-            <div className="text-gray-500">
-              SLA Target: <span className="font-semibold text-red-700 font-mono">03 Oct 2026, 11:30 AM *</span>
-            </div>
-            <div className="text-[10px] text-gray-400 font-mono">
-              Promoted via Priority Queue (Target breached: 2 hrs ago)
-            </div>
-          </div>
-        </div>
-
-        {/* AUTHOR & BOOK BANNER */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-gray-200/80">
-          <div className="flex items-center gap-3">
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120"
-              alt="Riya Sharma"
-              className="w-10 h-10 rounded object-cover border border-gray-300"
-            />
             <div>
-              <span className="text-[10px] font-bold uppercase text-gray-400 block">AUTHOR OF RECORD</span>
-              <span className="font-serif font-bold text-sm text-gray-900 block">Riya Sharma</span>
-              <span className="text-[11px] text-gray-500">riya.sharma@author.press</span>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-100 border border-amber-300 rounded flex items-center justify-center font-serif font-bold text-amber-900 text-sm">
-              TAS
-            </div>
-            <div>
-              <span className="text-[10px] font-bold uppercase text-gray-400 block">REGISTERED BOOK</span>
-              <span className="font-serif font-bold text-sm text-gray-900 block">The Art of Starting Again</span>
-              <span className="text-[11px] text-gray-500 font-mono">ISBN: 978-93-94818-12-8</span>
-            </div>
-          </div>
+              <div className="flex items-center gap-2 mb-2">
 
-          <div className="flex items-center gap-3 justify-end">
-            <div className="text-right">
-              <span className="text-[10px] font-bold uppercase text-gray-400 block">SYSTEM ACCOUNT ID</span>
-              <span className="font-mono font-bold text-sm text-gray-900 block">#BL-10224</span>
-              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded inline-block mt-0.5">
-                Folio Tier 1
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+                <span className="w-2 h-2 rounded-full bg-amber-800" />
 
-      {/* --- CONTENT LAYOUT (2 COLUMNS) --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* ================= LEFT MAIN THREAD (8 COLUMNS) ================= */}
-        <div className="lg:col-span-8 space-y-6">
-
-          {/* 1. ORIGINAL AUTHOR INQUIRY */}
-          <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-gray-200/80 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="w-7 h-7 rounded-full bg-amber-800 text-white font-serif font-bold text-xs flex items-center justify-center">
-                  RS
+                <span className="text-[10px] font-mono tracking-widest text-amber-900 uppercase font-bold">
+                  Operations Console
                 </span>
-                <div>
-                  <h3 className="font-serif font-bold text-base text-gray-900">Original Author Inquiry</h3>
-                  <span className="text-[10px] text-gray-400 font-mono">
-                    Submitted via Author Portal on 03 Oct 2026 at 10:14 AM
-                  </span>
-                </div>
+
               </div>
-              <span className="text-[10px] font-mono bg-gray-200 text-gray-700 px-2 py-0.5 rounded font-semibold">
-                ORIGINAL INBOUND DISPATCH
-              </span>
-            </div>
 
-            <div className="bg-[#F2EDE4] p-4 rounded-md border border-gray-300/40 text-xs text-gray-800 leading-relaxed font-serif italic">
-              "Hello, I noticed that my royalty payment for the last quarter has not appeared in my account. According to my author dashboard, over 420 copies were sold across paperback and Kindle editions, but the accrual status is still showing pending. Could someone please clarify when the disbursement will occur or if action is required on my part to verify my PAN / bank details? I have verified my bank account and routing info already."
-            </div>
+              <h1 className="font-serif text-3xl font-bold text-gray-900">
+                Ticket Queue
+              </h1>
 
-            <div className="flex items-center justify-between bg-white/60 p-3 rounded border border-gray-300/40 text-xs">
-              <div className="flex items-center gap-2 text-gray-700 font-mono text-[11px]">
-                <Paperclip className="w-4 h-4 text-gray-500" />
-                <span>Screenshot_royalty_dashboard.png</span>
-                <span className="text-gray-400">(420 KB, PNG) Uploaded with inquiry</span>
-              </div>
-              <button
-                type="button"
-                className="text-[11px] font-semibold text-gray-800 hover:underline flex items-center gap-1"
-              >
-                <span>Download Attachment</span>
-              </button>
-            </div>
-          </div>
-
-          {/* 2. AI RESPONSE DRAFT */}
-          <div className="bg-[#F8F5EE] border border-amber-300/80 rounded-lg p-6 space-y-4 shadow-2xs">
-            <div className="flex items-center justify-between border-b border-amber-200 pb-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-800" />
-                <h3 className="font-serif font-bold text-base text-gray-900">AI Response Draft</h3>
-              </div>
-              <div className="flex items-center gap-2 text-[10px] font-mono">
-                <span className="bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded">
-                  89% Match
-                </span>
-                <span className="text-gray-500">Based on Royalty Matrix v4.2</span>
-              </div>
-            </div>
-
-            <div className="text-[11px] text-gray-500 bg-amber-50/60 p-2 rounded border border-amber-200/50 flex items-center justify-between">
-              <span>🤖 Autonomic draft compiled — Review & customize before sending to author account.</span>
-            </div>
-
-            <div className="bg-white p-4 rounded border border-gray-300/60 font-serif text-xs leading-relaxed space-y-3 text-gray-800">
-              <p>Dear Riya,</p>
-              <p>
-                Thank you for reaching out regarding your royalty payment for <em>The Art of Starting Again</em>. We have audited your sales ledger: 420 copies have been recorded across print services and digital distributions, representing <strong>₹16,420.00 in net Q3 royalties</strong>.
+              <p className="text-sm text-gray-500 mt-1">
+                All queries submitted by authors.
               </p>
-              <p>
-                Under BookLeaf Publishing Section 3.2, quarterly royalty disbursements are processed within 45 days of quarter-close to allow distributor reconciliations. Your bank (HDFC Bank Account ending in 5289) is Auto-Verified and...
-              </p>
-            </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="px-3 py-1.5 bg-white border border-gray-300 rounded text-xs font-semibold text-gray-800 hover:bg-gray-50 transition flex items-center gap-1.5"
-                >
-                  <Edit className="w-3.5 h-3.5 text-gray-500" />
-                  <span>Regenerate Draft</span>
-                </button>
-                <button
-                  type="button"
-                  className="px-3 py-1.5 bg-white border border-gray-300 rounded text-xs font-semibold text-gray-800 hover:bg-gray-50 transition flex items-center gap-1.5"
-                >
-                  <Copy className="w-3.5 h-3.5 text-gray-500" />
-                  <span>Copy to Response</span>
-                </button>
-              </div>
-
-              <button
-                type="button"
-                className="px-4 py-2 bg-black hover:bg-gray-800 text-white rounded text-xs font-semibold flex items-center gap-2 transition"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>Send Response to Author</span>
-              </button>
-            </div>
-          </div>
-
-          {/* 3. CONVERSATION LEDGER */}
-          <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-gray-200/80 pb-3">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-amber-800" />
-                <h3 className="font-serif font-bold text-base text-gray-900">Conversation Ledger</h3>
-              </div>
-              <span className="text-[10px] font-mono text-gray-400">2 MESSAGES RECORDED</span>
-            </div>
-
-            {/* Message 1 */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-serif font-bold text-xs text-gray-900">Riya Sharma</span>
-                  <span className="bg-gray-200 text-gray-700 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
-                    AUTHOR
-                  </span>
-                </div>
-                <span className="text-[10px] text-gray-400 font-mono">03 Oct 2026 • 10:14 AM</span>
-              </div>
-              <div className="bg-[#F2EDE4] p-3.5 rounded text-xs text-gray-800 leading-relaxed font-sans">
-                Hello, I noticed that my royalty payment for the last quarter has not appeared in my account. According to my author dashboard, over 420 copies were sold across paperback and Kindle distributions, but the payout status still shows pending. Could someone please clarify when the disbursement will occur or if I need to re-touch my bank details, as confirmation: I have an urgent expense arriving this month.
-              </div>
-            </div>
-
-            {/* Message 2 */}
-            <div className="space-y-2 pl-4 border-l-2 border-amber-800">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-serif font-bold text-xs text-gray-900">Tulasi Shukla</span>
-                  <span className="bg-amber-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
-                    EDITORIAL DESK AGENT
-                  </span>
-                </div>
-                <span className="text-[10px] text-gray-400 font-mono">03 Oct 2026 • 10:32 AM</span>
-              </div>
-              <div className="bg-white p-3.5 rounded border border-gray-300/50 text-xs text-gray-800 leading-relaxed">
-                Greetings Riya. Thank you for your inquiry. Our finance audit balance is currently reconciling the Q3 disbursements bench with our bank settlement gateway. I have placed an escalation note with our treasury desk to verify reserve processing speed for your account. You will receive an immediate confirmation once cleared.
-              </div>
-            </div>
-
-            {/* Reply Input Box */}
-            <div className="pt-4 border-t border-gray-200/80 space-y-3">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">
-                REPLY TO AUTHOR
-              </label>
-              
-              <div className="bg-white border border-gray-300 rounded overflow-hidden">
-                <div className="flex items-center justify-between px-3 py-1.5 bg-[#F2EDE4] border-b border-gray-300 text-xs text-gray-600">
-                  <div className="flex items-center gap-3 font-mono">
-                    <button type="button" className="font-bold hover:text-black">B</button>
-                    <button type="button" className="italic hover:text-black">I</button>
-                    <button type="button" className="underline hover:text-black">U</button>
-                    <span>|</span>
-                    <button type="button" className="hover:text-black">Link</button>
-                    <button type="button" className="hover:text-black">Quote</button>
-                  </div>
-                  <Paperclip className="w-3.5 h-3.5 text-gray-500 cursor-pointer hover:text-black" />
-                </div>
-
-                <textarea
-                  rows={4}
-                  value={responseMsg}
-                  onChange={(e) => setResponseMsg(e.target.value)}
-                  placeholder="Write a direct correspondence dispatch to Riya Sharma..."
-                  className="w-full p-3 text-xs text-gray-900 focus:outline-none resize-y"
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-gray-400 italic">
-                  Delivered via official email and Author Financial Research.
-                </span>
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-black hover:bg-gray-800 text-white rounded text-xs font-semibold flex items-center gap-2 transition shadow-xs"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Send Response</span>
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-          {/* 4. INTERNAL NOTES */}
-          <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-5 space-y-3">
-            <div className="flex items-center justify-between border-b border-gray-200/80 pb-2">
-              <div className="flex items-center gap-2">
-                <Lock className="w-3.5 h-3.5 text-amber-800" />
-                <h4 className="font-serif font-bold text-sm text-gray-900">Internal Notes (Staff Only)</h4>
-              </div>
-              <span className="bg-amber-100 text-amber-900 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
-                DESK INTERNAL
-              </span>
-            </div>
-            <p className="text-[10px] text-gray-500 italic">
-              Private annotations regarding this ticket — strictly confidential, never visible to author or on Author Portal.
-            </p>
-
-            <div className="bg-[#F2EDE4] p-3 rounded border border-gray-300/40 text-xs space-y-1">
-              <div className="flex items-center justify-between text-[10px] font-mono text-gray-500">
-                <span className="font-semibold text-gray-800">Tulas Sharma (Treasury Desk)</span>
-                <span>03 Oct 2026 • 11:02 AM</span>
-              </div>
-              <p className="text-gray-800 leading-relaxed">
-                "Checked ledger with Treasury desk. Q3 escrow disbursement batch was stalled during RTGS gateway queue run. Manual clearance approved for this $16,420 INR. Author bank account verified."
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-        {/* ================= RIGHT SIDEBAR (4 COLUMNS) ================= */}
-        <div className="lg:col-span-4 space-y-6">
-
-          {/* SIDEBAR 1: AI CLASSIFICATION & TRIAGE */}
-          <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-gray-200/80 pb-2">
-              <div className="flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-amber-800" />
-                <h4 className="font-serif font-bold text-base text-gray-900">AI Classification & Triage</h4>
-              </div>
-              <span className="bg-amber-100 text-amber-900 text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
-                Model v4
-              </span>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <div className="flex justify-between text-[10px] text-gray-400 uppercase font-bold">
-                  <span>CLASSIFIED CATEGORY</span>
-                  <span className="font-mono text-gray-600">94% Confidence</span>
-                </div>
-                <div className="mt-1 bg-amber-100 text-amber-900 p-2 rounded border border-amber-200 font-semibold">
-                  Royalty & Payments
-                </div>
-                <p className="text-[10px] text-gray-500 mt-1">
-                  Reasoning: Statements contain "royalty", "payment", "payout", "disbursement", "bank details", and "Q3".
-                </p>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-[10px] text-gray-400 uppercase font-bold">
-                  <span>CALCULATED PRIORITY</span>
-                  <span className="font-mono text-gray-600">89% Confidence</span>
-                </div>
-                <div className="mt-1 bg-red-100 text-red-900 p-2 rounded border border-red-200 font-semibold flex items-center gap-1">
-                  <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
-                  <span>High Priority</span>
-                </div>
-                <p className="text-[10px] text-gray-500 mt-1">
-                  Reasoning: Financial escalation terms present; target SLA window under 2 hours.
-                </p>
-              </div>
             </div>
 
             <button
               type="button"
-              className="w-full py-2 bg-black hover:bg-gray-800 text-white font-bold text-xs rounded transition uppercase tracking-wider flex items-center justify-center gap-1.5"
+              onClick={fetchAllTickets}
+              className="self-start lg:self-auto flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold hover:bg-gray-50"
             >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Accept Classification</span>
+              <RefreshCw className="w-4 h-4" />
+              Refresh
             </button>
 
-            <div className="pt-2 border-t border-gray-200/80">
-              <span className="text-[10px] text-gray-400 uppercase font-bold block mb-1">
-                Override Category
-              </span>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ================================================= */}
+      {/* CONTENT */}
+      {/* ================================================= */}
+
+      <div className="p-8">
+
+        {/* ================================================= */}
+        {/* STATS */}
+        {/* ================================================= */}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+          {/* TOTAL */}
+
+          <div className="bg-white border border-gray-200 rounded-xl p-5">
+
+            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+              Total Queries
+            </p>
+
+            <p className="text-3xl font-serif font-bold mt-2 text-gray-900">
+              {tickets.length}
+            </p>
+
+            <p className="text-xs text-gray-400 mt-1">
+              All submitted tickets
+            </p>
+
+          </div>
+
+          {/* OPEN */}
+
+          <div className="bg-white border border-gray-200 rounded-xl p-5">
+
+            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+              Open
+            </p>
+
+            <p className="text-3xl font-serif font-bold mt-2 text-blue-700">
+              {
+                tickets.filter(
+                  (ticket) =>
+                    ticket.status === 'Open'
+                ).length
+              }
+            </p>
+
+            <p className="text-xs text-gray-400 mt-1">
+              Awaiting action
+            </p>
+
+          </div>
+
+          {/* CRITICAL */}
+
+          <div className="bg-white border border-gray-200 rounded-xl p-5">
+
+            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+              Critical
+            </p>
+
+            <p className="text-3xl font-serif font-bold mt-2 text-red-600">
+              {
+                tickets.filter(
+                  (ticket) =>
+                    ticket.priority === 'Critical'
+                ).length
+              }
+            </p>
+
+            <p className="text-xs text-gray-400 mt-1">
+              Needs immediate attention
+            </p>
+
+          </div>
+
+          {/* IN PROGRESS */}
+
+          <div className="bg-white border border-gray-200 rounded-xl p-5">
+
+            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+              In Progress
+            </p>
+
+            <p className="text-3xl font-serif font-bold mt-2 text-purple-700">
+              {
+                tickets.filter(
+                  (ticket) =>
+                    ticket.status === 'In Progress'
+                ).length
+              }
+            </p>
+
+            <p className="text-xs text-gray-400 mt-1">
+              Currently being handled
+            </p>
+
+          </div>
+
+        </div>
+
+        {/* ================================================= */}
+        {/* SEARCH + FILTER */}
+        {/* ================================================= */}
+
+        <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6">
+
+          <div className="flex flex-col lg:flex-row gap-3">
+
+            {/* SEARCH */}
+
+            <div className="relative flex-1">
+
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+
+              <input
+                type="text"
+                value={search}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
+                placeholder="Search subject, author, book, category..."
+                className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg py-2.5 pl-10 pr-4 text-sm outline-none focus:border-amber-800"
+              />
+
+            </div>
+
+            {/* STATUS */}
+
+            <div className="flex items-center gap-2">
+
+              <Filter className="w-4 h-4 text-gray-400" />
+
               <select
-                value={ticketCategory}
-                onChange={(e) => setTicketCategory(e.target.value)}
-                className="w-full bg-white border border-gray-300 rounded p-1.5 text-xs text-gray-800 focus:outline-none"
+                value={statusFilter}
+                onChange={(e) =>
+                  setStatusFilter(
+                    e.target.value as
+                      | 'All'
+                      | TicketStatus
+                  )
+                }
+                className="bg-[#FDFBF7] border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none"
               >
-                <option value="Royalty & Payments">Royalty & Payments</option>
-                <option value="Printing & Quality">Printing & Quality</option>
-                <option value="ISBN & Metadata">ISBN & Metadata</option>
-                <option value="Book Design & Production">Book Design & Production</option>
+
+                <option value="All">
+                  All Status
+                </option>
+
+                <option value="Open">
+                  Open
+                </option>
+
+                <option value="In Progress">
+                  In Progress
+                </option>
+
+                <option value="Resolved">
+                  Resolved
+                </option>
+
+                <option value="Closed">
+                  Closed
+                </option>
+
               </select>
-            </div>
-          </div>
 
-          {/* SIDEBAR 2: TICKET MANAGEMENT */}
-          <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-5 space-y-4">
-            <div className="border-b border-gray-200/80 pb-2">
-              <h4 className="font-serif font-bold text-base text-gray-900">Ticket Management</h4>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">
-                  ASSIGNED STATUS
-                </label>
-                <select
-                  value={ticketStatus}
-                  onChange={(e) => setTicketStatus(e.target.value)}
-                  className="w-full bg-white border border-gray-300 rounded p-2 text-xs font-semibold text-gray-900 focus:outline-none"
-                >
-                  <option value="Open">Open</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Pending Author Response">Pending Author Response</option>
-                  <option value="Resolved">Resolved</option>
-                </select>
-              </div>
+            {/* PRIORITY */}
 
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">
-                  PRIORITY LEVEL
-                </label>
-                <select
-                  value={ticketPriority}
-                  onChange={(e) => setTicketPriority(e.target.value)}
-                  className="w-full bg-white border border-gray-300 rounded p-2 text-xs font-semibold text-gray-900 focus:outline-none"
-                >
-                  <option value="Critical">Critical</option>
-                  <option value="High">High</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Low">Low</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">
-                  EDITORIAL CATEGORY
-                </label>
-                <select
-                  value={ticketCategory}
-                  onChange={(e) => setTicketCategory(e.target.value)}
-                  className="w-full bg-white border border-gray-300 rounded p-2 text-xs text-gray-900 focus:outline-none"
-                >
-                  <option value="Royalty & Payments">Royalty & Payments</option>
-                  <option value="Printing & Quality">Printing & Quality</option>
-                  <option value="ISBN & Metadata">ISBN & Metadata</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">
-                  ASSIGNED DESK OFFICER
-                </label>
-                <select className="w-full bg-white border border-gray-300 rounded p-2 text-xs font-semibold text-gray-900 focus:outline-none">
-                  <option>Tulasi Shukla (Lead Administrator)</option>
-                  <option>Devrat Grover</option>
-                  <option>Marcus Vance</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-center pt-2 border-t border-gray-200/80 text-[10px]">
-                <div className="bg-[#F2EDE4] p-2 rounded">
-                  <span className="text-gray-400 block font-bold">LAST UPDATED</span>
-                  <span className="font-mono text-gray-800 font-semibold">03 Oct 2026</span>
-                </div>
-                <div className="bg-[#F2EDE4] p-2 rounded">
-                  <span className="text-gray-400 block font-bold">SLA REMAINING</span>
-                  <span className="font-mono text-red-700 font-bold">Breached</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 pt-2">
-                <button
-                  type="button"
-                  className="py-2 bg-black hover:bg-gray-800 text-white font-semibold text-xs rounded transition"
-                >
-                  Update Ticket
-                </button>
-                <button
-                  type="button"
-                  className="py-2 bg-red-100 hover:bg-red-200 border border-red-200 text-red-900 font-semibold text-xs rounded transition"
-                >
-                  Close Ticket
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* SIDEBAR 3: AUTHOR DOSSIER */}
-          <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-gray-200/80 pb-2">
-              <h4 className="font-serif font-bold text-base text-gray-900">Author Dossier</h4>
-              <span className="text-[10px] font-mono text-gray-400">#BL-10224</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-amber-200 border border-amber-300 rounded-md flex items-center justify-center font-serif font-bold text-amber-900 text-lg">
-                RS
-              </div>
-              <div>
-                <h5 className="font-serif font-bold text-base text-gray-900">Riya Sharma</h5>
-                <span className="text-xs text-gray-500 block">PBL - 10224</span>
-                <span className="text-[10px] text-gray-400">Riya Sharma (Calm Literary)</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 text-center text-xs">
-              <div className="bg-[#F2EDE4] p-2 rounded border border-gray-300/40">
-                <span className="text-[9px] font-bold text-gray-400 uppercase block">CATALOG TITLES</span>
-                <span className="font-serif font-bold text-base text-gray-900 block">4 Books</span>
-                <span className="text-[9px] text-gray-500">Active Publishing</span>
-              </div>
-              <div className="bg-[#F2EDE4] p-2 rounded border border-gray-300/40">
-                <span className="text-[9px] font-bold text-gray-400 uppercase block">LIFETIME SALES</span>
-                <span className="font-serif font-bold text-base text-gray-900 block">₹87,240</span>
-                <span className="text-[9px] text-emerald-800 font-semibold">Verified Escrow</span>
-              </div>
-            </div>
-
-            {/* Escrow Bank Info Summary */}
-            <div className="bg-white/80 p-3 rounded border border-gray-300/50 space-y-1 text-xs">
-              <span className="text-[10px] font-bold text-gray-400 uppercase block">REGISTERED BANK ACCOUNT</span>
-              <div className="font-semibold text-gray-900 flex items-center justify-between">
-                <span>HDFC Bank Ltd.</span>
-                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-mono">
-                  Verified
-                </span>
-              </div>
-              <p className="text-[10px] font-mono text-gray-500">
-                A/C: •••• •••• •••• 5289 (Fort Branch, Mumbai)
-              </p>
-            </div>
-
-            {/* Recent Book */}
-            <div className="bg-[#F2EDE4] p-3 rounded border border-gray-300/40 space-y-2">
-              <span className="text-[10px] font-bold text-gray-400 uppercase block">LATEST PUBLISHED WORK</span>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-10 bg-black text-white text-[9px] font-serif font-bold p-1 flex items-center justify-center text-center leading-tight rounded-xs">
-                  The Art
-                </div>
-                <div>
-                  <span className="font-serif font-bold text-xs text-gray-900 block">The Art of Starting...</span>
-                  <span className="text-[10px] text-gray-500 block">3rd Edition Print Run (Hardcover)</span>
-                  <span className="text-[10px] font-mono text-gray-400">ISBN: 978-93-94818-12-8</span>
-                </div>
-              </div>
-              <div className="text-[10px] text-gray-500 flex justify-between border-t border-gray-300/40 pt-1.5">
-                <span>Q3 Reported: <strong className="text-gray-900">420 copies</strong></span>
-                <span>Payout: <strong className="text-emerald-800">₹16,420.00</strong></span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="w-full py-2 bg-white hover:bg-gray-100 border border-gray-300 text-gray-800 font-semibold text-xs rounded transition flex items-center justify-center gap-1.5"
+            <select
+              value={priorityFilter}
+              onChange={(e) =>
+                setPriorityFilter(
+                  e.target.value as
+                    | 'All'
+                    | TicketPriority
+                )
+              }
+              className="bg-[#FDFBF7] border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none"
             >
-              <span>VIEW AUTHOR FULL PROFILE</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+
+              <option value="All">
+                All Priority
+              </option>
+
+              <option value="Critical">
+                Critical
+              </option>
+
+              <option value="High">
+                High
+              </option>
+
+              <option value="Medium">
+                Medium
+              </option>
+
+              <option value="Low">
+                Low
+              </option>
+
+            </select>
+
           </div>
 
         </div>
 
+       
+        <div className="flex items-center justify-between mb-3">
+
+          <div>
+
+            <span className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+              Submitted Queries
+            </span>
+
+            <p className="text-sm text-gray-600 mt-1">
+              Showing{' '}
+              <span className="font-bold text-gray-900">
+                {filteredTickets.length}
+              </span>{' '}
+              of{' '}
+              <span className="font-bold text-gray-900">
+                {tickets.length}
+              </span>{' '}
+              queries
+            </p>
+
+          </div>
+
+        </div>
+
+        {/* ================================================= */}
+        {/* TICKETS */}
+        {/* ================================================= */}
+
+        <div className="space-y-3">
+
+          {filteredTickets.length === 0 ? (
+
+            <div className="bg-white border border-gray-200 rounded-xl p-14 text-center">
+
+              <div className="w-14 h-14 mx-auto rounded-full bg-[#F2EDE4] flex items-center justify-center">
+
+                <Inbox className="w-6 h-6 text-gray-500" />
+
+              </div>
+
+              <h3 className="font-serif font-bold text-lg mt-4">
+                No queries found
+              </h3>
+
+              <p className="text-sm text-gray-500 mt-1">
+                No submitted author queries match your filters.
+              </p>
+
+            </div>
+
+          ) : (
+
+            filteredTickets.map((ticket) => (
+
+              // <button
+              //   key={ticket._id}
+              //   type="button"
+              //   onClick={() =>
+              //     navigate(
+              //       `/admin/tickets/${ticket._id}`
+              //     )
+              //   }
+              //   className="w-full text-left bg-white border border-red-900 rounded-xl p-5 hover:border-gray-400 hover:shadow-sm transition group"
+              // >
+
+              //   <div className="flex flex-col xl:flex-row xl:items-center gap-5">
+
+              //     {/* ===================================== */}
+              //     {/* QUERY */}
+              //     {/* ===================================== */}
+
+              //     <div className="flex-1 min-w-0">
+
+              //       <div className="flex flex-wrap items-center gap-2">
+
+              //         <span className="font-mono text-[10px] text-gray-400">
+              //           #
+              //           {ticket._id
+              //             .slice(-6)
+              //             .toUpperCase()}
+              //         </span>
+
+              //         <span
+              //           className={`px-2 py-1 rounded-full text-[10px] font-bold border ${getPriorityStyle(
+              //             ticket.priority
+              //           )}`}
+              //         >
+              //           {ticket.priority}
+              //         </span>
+
+              //         <span
+              //           className={`px-2 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(
+              //             ticket.status
+              //           )}`}
+              //         >
+              //           {ticket.status}
+              //         </span>
+
+              //       </div>
+
+              //       <h3 className="font-serif font-bold text-lg text-gray-900 mt-2">
+              //         {ticket.subject}
+              //       </h3>
+
+              //       <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+              //         {ticket.description}
+              //       </p>
+
+              //       <div className="flex flex-wrap items-center gap-2 mt-3">
+
+              //         <span className="text-[10px] bg-[#F2EDE4] text-gray-600 px-2 py-1 rounded">
+              //           {ticket.category}
+              //         </span>
+
+              //       </div>
+
+              //     </div>
+
+              //     {/* ===================================== */}
+              //     {/* AUTHOR */}
+              //     {/* ===================================== */}
+
+              //     <div className="xl:w-48">
+
+              //       <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+              //         Author
+              //       </p>
+
+              //       <p className="text-sm font-semibold text-gray-900 mt-1">
+              //         {ticket.authorId}
+              //       </p>
+
+              //       <p className="text-[10px] text-gray-400 mt-1">
+              //         Author ID
+              //       </p>
+
+              //     </div>
+
+              //     {/* ===================================== */}
+              //     {/* BOOK */}
+              //     {/* ===================================== */}
+
+              //     <div className="xl:w-52">
+
+              //       <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+              //         Book
+              //       </p>
+
+              //       {ticket.bookId ? (
+
+              //         <>
+              //           <p className="text-sm font-semibold text-gray-900 mt-1 truncate">
+              //             {ticket.bookId.title}
+              //           </p>
+
+              //           <p className="text-[10px] text-gray-400 font-mono mt-1">
+              //             ISBN: {ticket.bookId.isbn}
+              //           </p>
+              //         </>
+
+              //       ) : (
+
+              //         <p className="text-xs text-gray-500 mt-1">
+              //           General / Account Level
+              //         </p>
+
+              //       )}
+
+              //     </div>
+
+              //     {/* ===================================== */}
+              //     {/* DATE */}
+              //     {/* ===================================== */}
+
+              //     <div className="xl:w-32 xl:text-right">
+
+              //       <div className="flex xl:justify-end items-center gap-1.5 text-gray-400">
+
+              //         <Clock className="w-3.5 h-3.5" />
+
+              //         <span className="text-xs">
+              //           {formatDate(
+              //             ticket.createdAt
+              //           )}
+              //         </span>
+
+              //       </div>
+
+              //       <p className="text-[10px] text-gray-400 mt-1">
+              //         {formatTime(
+              //           ticket.createdAt
+              //         )}
+              //       </p>
+
+              //     </div>
+
+              //     {/* ===================================== */}
+              //     {/* ARROW */}
+              //     {/* ===================================== */}
+
+              //     <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-black transition flex-shrink-0" />
+
+              //   </div>
+
+              // </button>
+<button
+  key={ticket._id}
+  type="button"
+  onClick={() => navigate(`/admin/tickets/${ticket._id}`)}
+  className="w-full text-left bg-white border border-red-900 rounded-xl p-5 hover:border-gray-400 hover:shadow-sm transition group"
+>
+  <div className="flex flex-col xl:flex-row xl:items-center gap-5">
+
+    {/* QUERY */}
+    <div className="flex-1 min-w-0">
+
+      <div className="flex flex-wrap items-center gap-2">
+
+        <span className="font-mono text-[10px] text-gray-400">
+          #{ticket._id.slice(-6).toUpperCase()}
+        </span>
+
+        <span
+          className={`px-2 py-1 rounded-full text-[10px] font-bold border ${getPriorityStyle(
+            ticket.priority
+          )}`}
+        >
+          {ticket.priority}
+        </span>
+
+        <span
+          className={`px-2 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(
+            ticket.status
+          )}`}
+        >
+          {ticket.status}
+        </span>
+
       </div>
+
+      <h3 className="font-serif font-bold text-lg text-gray-900 mt-2">
+        {ticket.subject}
+      </h3>
+
+      <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+        {ticket.description}
+      </p>
+
+      <div className="flex flex-wrap items-center gap-2 mt-3">
+        <span className="text-[10px] bg-[#F2EDE4] text-gray-600 px-2 py-1 rounded">
+          {ticket.category}
+        </span>
+      </div>
+
+    </div>
+
+    {/* AUTHOR */}
+    <div className="xl:w-48">
+
+      <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+        Author
+      </p>
+
+      <p className="text-sm font-semibold text-gray-900 mt-1">
+        {ticket.authorId}
+      </p>
+
+      <p className="text-[10px] text-gray-400 mt-1">
+        Author ID
+      </p>
+
+    </div>
+
+    {/* BOOK */}
+    <div className="xl:w-52">
+
+      <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+        Book
+      </p>
+
+      {ticket.bookId ? (
+        <>
+          <p className="text-sm font-semibold text-gray-900 mt-1 truncate">
+            {ticket.bookId.title}
+          </p>
+
+          <p className="text-[10px] text-gray-400 font-mono mt-1">
+            ISBN: {ticket.bookId.isbn}
+          </p>
+        </>
+      ) : (
+        <p className="text-xs text-gray-500 mt-1">
+          General / Account Level
+        </p>
+      )}
+
+    </div>
+
+    {/* DATE */}
+    <div className="xl:w-32 xl:text-right">
+
+      <div className="flex xl:justify-end items-center gap-1.5 text-gray-400">
+
+        <Clock className="w-3.5 h-3.5" />
+
+        <span className="text-xs">
+          {formatDate(ticket.createdAt)}
+        </span>
+
+      </div>
+
+      <p className="text-[10px] text-gray-400 mt-1">
+        {formatTime(ticket.createdAt)}
+      </p>
+
+    </div>
+
+    {/* ARROW */}
+    <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-black transition flex-shrink-0" />
+
+  </div>
+</button>
+            ))
+
+          )}
+
+        </div>
+
+      </div>
+
     </div>
   );
 };

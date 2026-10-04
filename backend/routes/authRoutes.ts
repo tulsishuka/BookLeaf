@@ -1,12 +1,9 @@
 import { Router } from "express";
 
-import {
-  login,
-  getMe,
-  getAuthorDashboard,
-  getAdminDashboard,
-} from "../controllers/authController";
+
 import { protect, requireRole } from "../middlewares/authMiddleware";
+import { getAdminDashboard, getAuthorDashboard, getMe, login } from "../controllers/authController";
+import { getAdminTicketById } from "../controllers/ticket.controller";
 
 
 const router = Router();
@@ -49,6 +46,14 @@ router.get(
   protect,
   requireRole("admin"),
   getAdminDashboard
+);
+
+
+router.get(
+  "/admin/:id",
+  protect,
+  requireRole("admin"),
+  getAdminTicketById
 );
 
 export default router;

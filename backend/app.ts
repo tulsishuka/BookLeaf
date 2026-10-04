@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import authRoutes from "./routes/authRoutes";
+import ticketRoutes from "./routes/ticket.routes";
 
 const app = express();
 
@@ -35,5 +36,5 @@ app.get("/", (_req, res) => {
 */
 
 app.use("/api/auth", authRoutes);
-
+app.use("/api/tickets", ticketRoutes);
 export default app;

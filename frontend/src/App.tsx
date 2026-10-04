@@ -20,11 +20,13 @@ import MyTickets from "./components/author/MyTickets";
 import AuthorProfile from "./components/author/AuthorProfile";
 
 import AdminLayout from "./Layout/AdminLayout";
-import BooksCatalog from "./components/admin/BooksCatalog";
-import TicketQueue from "./components/admin/TicketQueue";
+
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AuthDashboard from "./components/author/AuthDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import TicketQueue from "./components/admin/TicketQueue";
+import TicketDetail from "./components/admin/TicketDetail";
+import AuthorTicketDetail from "./components/author/AuthorTicketDetail";
 
 
 const HomePage = () => {
@@ -61,14 +63,34 @@ const App = () => {
     <Route path="submit-query" element={<SubmitQuery />} />
     <Route path="tickets" element={<MyTickets />} />
     <Route path="account" element={<AuthorProfile />} />
+    <Route
+      path="tickets/:id"
+      element={<AuthorTicketDetail />}
+    />
   </Route>
 </Route>
 
 <Route element={<ProtectedRoute allowedRole="admin" />}>
   <Route path="/admin" element={<AdminLayout />}>
-    <Route path="dashboard" element={<AdminDashboard />} />
-    <Route path="books" element={<BooksCatalog />} />
-    <Route path="tickets" element={<TicketQueue />} />
+
+    {/* Admin Dashboard */}
+    <Route
+      path="dashboard"
+      element={<AdminDashboard />}
+    />
+
+    {/* ALL QUERIES */}
+    <Route
+      path="tickets"
+      element={<TicketQueue />}
+    />
+
+    {/* SINGLE QUERY DETAIL */}
+    <Route
+      path="tickets/:id"
+      element={<TicketDetail />}
+    />
+
   </Route>
 </Route>
 
