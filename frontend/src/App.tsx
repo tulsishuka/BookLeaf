@@ -90,7 +90,6 @@ const App = () => {
       path="tickets/:id"
       element={<TicketDetail />}
     />
-
   </Route>
 </Route>
 

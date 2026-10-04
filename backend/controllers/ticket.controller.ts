@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import Ticket from "../models/Ticket";
 import Message from "../models/Message";
 import Book from "../models/Book";
+import { analyzeTicketWithAI } from "../services/ai.service";
+import User from "../models/User";
 
 // ============================================================
 // HELPERS
@@ -25,6 +27,152 @@ const getUserId = (req: Request): string | null => {
   return req.user.userId;
 };
 
+
+
+// export const createTicket = async (
+//   req: Request,
+//   res: Response
+// ): Promise<Response> => {
+//   try {
+//     const authorId = getAuthorId(req);
+//     const userId = getUserId(req);
+
+//     // -----------------------------------------
+//     // AUTH CHECK
+//     // -----------------------------------------
+
+//     if (!authorId || !userId) {
+//       return res.status(401).json({
+//         message: "Author authentication information is missing",
+//       });
+//     }
+
+//     const {
+//       bookId,
+//       subject,
+//       description,
+//     } = req.body as {
+//       bookId?: string;
+//       subject?: string;
+//       description?: string;
+//     };
+
+//     // -----------------------------------------
+//     // VALIDATE SUBJECT
+//     // -----------------------------------------
+
+//     if (!subject?.trim()) {
+//       return res.status(400).json({
+//         message: "Subject is required",
+//       });
+//     }
+
+//     // -----------------------------------------
+//     // VALIDATE DESCRIPTION
+//     // -----------------------------------------
+
+//     if (!description?.trim()) {
+//       return res.status(400).json({
+//         message: "Description is required",
+//       });
+//     }
+
+//     // -----------------------------------------
+//     // BOOK IS OPTIONAL
+//     //
+//     // Author can:
+//     // 1. Select a book
+//     // 2. Send a General / Account Level query
+//     // -----------------------------------------
+
+//     let validBookId: mongoose.Types.ObjectId | null = null;
+
+//     if (bookId) {
+//       // Check ObjectId
+//       if (!mongoose.Types.ObjectId.isValid(bookId)) {
+//         return res.status(400).json({
+//           message: "Invalid book ID",
+//         });
+//       }
+
+//       // Make sure this book belongs to the logged-in author
+//       const book = await Book.findOne({
+//         _id: bookId,
+//         authorId: authorId,
+//       });
+
+//       if (!book) {
+//         return res.status(403).json({
+//           message: "This book does not belong to your account",
+//         });
+//       }
+
+//       validBookId = new mongoose.Types.ObjectId(bookId);
+//     }
+
+//     // -----------------------------------------
+//     // CREATE TICKET
+//     // -----------------------------------------
+
+//     const ticket = await Ticket.create({
+//       authorId: authorId,
+
+//       // null when General / Account Level
+//       bookId: validBookId,
+
+//       subject: subject.trim(),
+//       description: description.trim(),
+
+//       // AI can update these later
+//       category: "General Inquiry",
+//       priority: "Medium",
+//       status: "Open",
+//     });
+
+//     // -----------------------------------------
+//     // CREATE FIRST MESSAGE
+//     // -----------------------------------------
+//     //
+//     // IMPORTANT:
+//     // senderId = USER _id
+//     // NOT authorId ("AUTH001")
+//     //
+
+//     const firstMessage = await Message.create({
+//       ticketId: ticket._id,
+
+//       // MongoDB User _id
+//       senderId: new mongoose.Types.ObjectId(userId),
+
+//       senderRole: "author",
+//       message: description.trim(),
+//       isInternal: false,
+//     });
+
+//     // -----------------------------------------
+//     // RESPONSE
+//     // -----------------------------------------
+
+//     return res.status(201).json({
+//       message: "Support ticket created successfully",
+
+//       ticket,
+
+//       firstMessage,
+//     });
+//   } catch (error) {
+//     console.error("CREATE TICKET ERROR:", error);
+
+//     return res.status(500).json({
+//       message: "Failed to create support ticket",
+
+//       error:
+//         error instanceof Error
+//           ? error.message
+//           : "Unknown server error",
+//     });
+//   }
+// };
 
 
 export const createTicket = async (
@@ -76,14 +224,26 @@ export const createTicket = async (
     }
 
     // -----------------------------------------
+    // GET LOGGED-IN AUTHOR
+    // -----------------------------------------
+
+    const author = await User.findById(userId).select(
+      "name email authorId role"
+    );
+
+    if (!author) {
+      return res.status(404).json({
+        message: "Author account not found",
+      });
+    }
+
+    // -----------------------------------------
     // BOOK IS OPTIONAL
-    //
-    // Author can:
-    // 1. Select a book
-    // 2. Send a General / Account Level query
     // -----------------------------------------
 
     let validBookId: mongoose.Types.ObjectId | null = null;
+
+    let selectedBook = null;
 
     if (bookId) {
       // Check ObjectId
@@ -94,19 +254,37 @@ export const createTicket = async (
       }
 
       // Make sure this book belongs to the logged-in author
-      const book = await Book.findOne({
+      selectedBook = await Book.findOne({
         _id: bookId,
         authorId: authorId,
       });
 
-      if (!book) {
+      if (!selectedBook) {
         return res.status(403).json({
           message: "This book does not belong to your account",
         });
       }
 
-      validBookId = new mongoose.Types.ObjectId(bookId);
+      validBookId = selectedBook._id;
     }
+
+    // -----------------------------------------
+    // AI ANALYSIS
+    //
+    // ONE AI CALL
+    //
+    // AI returns:
+    // 1. Category
+    // 2. Priority
+    // 3. Draft response
+    // -----------------------------------------
+
+    const aiResult = await analyzeTicketWithAI({
+      subject: subject.trim(),
+      description: description.trim(),
+      authorName: author.name,
+      bookTitle: selectedBook?.title,
+    });
 
     // -----------------------------------------
     // CREATE TICKET
@@ -121,9 +299,17 @@ export const createTicket = async (
       subject: subject.trim(),
       description: description.trim(),
 
-      // AI can update these later
-      category: "General Inquiry",
-      priority: "Medium",
+      // AI-selected values
+      category: aiResult.category,
+      priority: aiResult.priority,
+
+      // Keep original AI suggestions
+      aiCategory: aiResult.category,
+      aiPriority: aiResult.priority,
+
+      // AI-generated draft
+      aiDraftResponse: aiResult.draftResponse,
+
       status: "Open",
     });
 
@@ -131,19 +317,19 @@ export const createTicket = async (
     // CREATE FIRST MESSAGE
     // -----------------------------------------
     //
-    // IMPORTANT:
-    // senderId = USER _id
+    // senderId = MongoDB User _id
     // NOT authorId ("AUTH001")
     //
 
     const firstMessage = await Message.create({
       ticketId: ticket._id,
 
-      // MongoDB User _id
       senderId: new mongoose.Types.ObjectId(userId),
 
       senderRole: "author",
+
       message: description.trim(),
+
       isInternal: false,
     });
 
@@ -171,8 +357,6 @@ export const createTicket = async (
     });
   }
 };
-
-
 
 export const getMyTickets = async (
   req: Request,

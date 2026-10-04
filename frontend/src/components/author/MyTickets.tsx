@@ -1,5 +1,6 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 
+
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -229,19 +230,11 @@ const MyTickets = () => {
   const filteredTickets = useMemo(() => {
     let result = [...tickets];
 
-    // -----------------------------------------
-    // STATUS FILTER
-    // -----------------------------------------
-
     if (activeTab !== 'All') {
       result = result.filter(
         (ticket) => ticket.status === activeTab
       );
     }
-
-    // -----------------------------------------
-    // BOOK FILTER
-    // -----------------------------------------
 
     if (selectedBookFilter !== 'All Books') {
       result = result.filter(
@@ -249,10 +242,6 @@ const MyTickets = () => {
           ticket.bookId?.title === selectedBookFilter
       );
     }
-
-    // -----------------------------------------
-    // SEARCH
-    // -----------------------------------------
 
     if (searchQuery.trim()) {
       const query = searchQuery
@@ -278,10 +267,6 @@ const MyTickets = () => {
         );
       });
     }
-
-    // -----------------------------------------
-    // SORT
-    // -----------------------------------------
 
     if (sortOrder === 'Latest Updated') {
       result.sort(
@@ -369,13 +354,13 @@ const MyTickets = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] p-6 lg:p-10 text-gray-800 font-sans">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-[#FDFBF7] px-4 py-6 sm:px-6 lg:px-10 text-gray-800 font-sans">
+        <div className="w-full">
 
           <div className="flex items-center justify-center min-h-[500px]">
             <div className="text-center">
 
-              <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin mx-auto mb-4" />
+              <div className="w-8 h-8 border-2 border-[#CFC7BB] border-t-[#9c6a3a] rounded-full animate-spin mx-auto mb-4" />
 
               <p className="text-sm text-gray-600">
                 Loading your support tickets...
@@ -394,18 +379,18 @@ const MyTickets = () => {
   // ============================================================
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-6 lg:p-10 text-gray-800 font-sans">
+    <div className="min-h-screen w-full bg-[#FDFBF7] px-4 py-6 sm:px-6 lg:px-10 text-gray-800 font-sans">
 
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="w-full space-y-6">
 
-        {/* --- BREADCRUMB & HEADER TOP --- */}
+        {/* HEADER TOP */}
 
-        <div className="flex items-center justify-between border-b border-gray-200/80 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#D8D0C5] pb-4">
 
           <div className="text-xs text-gray-500 flex items-center gap-2">
             <span>Dashboard</span>
             <span>/</span>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-[#9c6a3a]">
               My Tickets
             </span>
           </div>
@@ -424,15 +409,15 @@ const MyTickets = () => {
 
         </div>
 
-        {/* --- PAGE HEADING & MAIN CTA --- */}
+        {/* PAGE HEADING */}
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
 
           <div>
 
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#F2EDE4] border border-gray-300/50 text-[10px] font-semibold text-gray-600 uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#F2EDE4] border border-[#CFC7BB] text-[10px] font-semibold text-[#9c6a3a] uppercase tracking-wider mb-2">
 
-              <Sparkles className="w-3 h-3 text-amber-800" />
+              <Sparkles className="w-3 h-3 text-[#9c6a3a]" />
 
               <span>
                 Editorial Docket & Author Correspondence
@@ -440,7 +425,7 @@ const MyTickets = () => {
 
             </div>
 
-            <h1 className="text-3xl lg:text-4xl font-serif font-bold text-gray-900">
+            <h1 className="text-3xl lg:text-4xl font-serif font-bold text-[#9c6a3a]">
               My Support Tickets & Archival Inquiries
             </h1>
 
@@ -455,22 +440,22 @@ const MyTickets = () => {
               window.location.href =
                 '/author/submit-query';
             }}
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-black hover:bg-gray-800 text-white rounded-md text-xs font-semibold shadow-sm transition whitespace-nowrap self-start md:self-auto"
+            className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-[#9c6a3a] hover:bg-[#85572f] text-white border border-[#9c6a3a] rounded-md text-xs font-semibold shadow-sm transition whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
 
             <span>
-              + New Support Query
+               New Support Query
             </span>
 
           </button>
 
         </div>
 
-        {/* --- ERROR --- */}
+        {/* ERROR */}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center justify-between gap-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 
             <p className="text-xs text-red-700">
               {error}
@@ -478,7 +463,7 @@ const MyTickets = () => {
 
             <button
               onClick={fetchTickets}
-              className="px-3 py-1.5 bg-black text-white rounded text-xs font-semibold"
+              className="w-full sm:w-auto px-3 py-1.5 bg-[#9c6a3a] hover:bg-[#85572f] border border-[#9c6a3a] text-white rounded text-xs font-semibold transition"
             >
               Retry
             </button>
@@ -486,9 +471,9 @@ const MyTickets = () => {
           </div>
         )}
 
-        {/* --- CONTROLS BAR --- */}
+        {/* CONTROLS BAR */}
 
-        <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-4 space-y-4">
+        <div className="bg-[#F8F5EE] border border-[#CFC7BB] rounded-lg p-4 space-y-4">
 
           {/* Row 1 */}
 
@@ -498,7 +483,7 @@ const MyTickets = () => {
 
             <div className="md:col-span-6 relative">
 
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#9c6a3a]" />
 
               <input
                 type="text"
@@ -507,7 +492,7 @@ const MyTickets = () => {
                   setSearchQuery(e.target.value)
                 }
                 placeholder="Search by ticket ID, subject, or manuscript..."
-                className="w-full bg-white border border-gray-300 rounded pl-9 pr-3 py-2 text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-black"
+                className="w-full bg-[#FDFBF7] border border-[#9c6a3a] rounded pl-9 pr-3 py-2 text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#9c6a3a]"
               />
 
             </div>
@@ -521,7 +506,7 @@ const MyTickets = () => {
                 onChange={(e) =>
                   setSelectedBookFilter(e.target.value)
                 }
-                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-xs text-gray-800 font-medium appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-black"
+                className="w-full bg-[#FDFBF7] border border-[#9c6a3a] rounded px-3 py-2 text-xs text-gray-800 font-medium appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-[#9c6a3a]"
               >
 
                 <option>
@@ -539,7 +524,7 @@ const MyTickets = () => {
 
               </select>
 
-              <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-[#9c6a3a] pointer-events-none" />
 
             </div>
 
@@ -552,7 +537,7 @@ const MyTickets = () => {
                 onChange={(e) =>
                   setSortOrder(e.target.value)
                 }
-                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-xs text-gray-800 font-medium appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-black"
+                className="w-full bg-[#FDFBF7] border border-[#9c6a3a] rounded px-3 py-2 text-xs text-gray-800 font-medium appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-[#9c6a3a]"
               >
 
                 <option value="Latest Updated">
@@ -569,7 +554,7 @@ const MyTickets = () => {
 
               </select>
 
-              <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-[#9c6a3a] pointer-events-none" />
 
             </div>
 
@@ -577,7 +562,7 @@ const MyTickets = () => {
 
           {/* Row 2 */}
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-gray-200/60">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-[#D8D0C5]">
 
             <div className="flex flex-wrap items-center gap-1.5">
 
@@ -592,10 +577,10 @@ const MyTickets = () => {
                     onClick={() =>
                       setActiveTab(tab.label)
                     }
-                    className={`px-3 py-1 rounded text-xs font-semibold transition flex items-center gap-1 ${
+                    className={`px-3 py-1 rounded text-xs font-semibold transition flex items-center gap-1 border ${
                       isActive
-                        ? 'bg-black text-white'
-                        : 'bg-[#F2EDE4] text-gray-700 hover:bg-gray-200 border border-gray-300/40'
+                        ? 'bg-[#9c6a3a] text-white border-[#9c6a3a]'
+                        : 'bg-[#F2EDE4] text-gray-700 hover:bg-[#E8E1D7] border-[#CFC7BB]'
                     }`}
                   >
 
@@ -621,7 +606,7 @@ const MyTickets = () => {
 
             <div className="text-[11px] text-gray-500 flex items-center gap-1.5">
 
-              <Clock className="w-3.5 h-3.5 text-amber-800" />
+              <Clock className="w-3.5 h-3.5 text-[#9c6a3a]" />
 
               <span>
                 Guaranteed Desk Response: within 24 business hours
@@ -633,19 +618,17 @@ const MyTickets = () => {
 
         </div>
 
-        {/* ======================================================
-            TICKETS LIST
-        ====================================================== */}
+        {/* TICKETS LIST */}
 
         <div className="space-y-4">
 
           {filteredTickets.length === 0 ? (
 
-            <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-12 text-center">
+            <div className="bg-[#F8F5EE] border border-[#CFC7BB] rounded-lg p-8 sm:p-12 text-center">
 
-              <FileText className="w-10 h-10 text-gray-400 mx-auto mb-3" />
+              <FileText className="w-10 h-10 text-[#9c6a3a] mx-auto mb-3" />
 
-              <h3 className="font-serif font-bold text-lg text-gray-900">
+              <h3 className="font-serif font-bold text-lg text-[#9c6a3a]">
                 No support tickets found
               </h3>
 
@@ -670,16 +653,16 @@ const MyTickets = () => {
               return (
                 <div
                   key={ticket._id}
-                  className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-5 lg:p-6 transition hover:shadow-sm space-y-4 relative"
+                  className="bg-[#F8F5EE] border border-[#CFC7BB] rounded-lg p-5 lg:p-6 transition hover:shadow-sm space-y-4 relative"
                 >
 
                   {/* Card Header */}
 
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200/80 pb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#D8D0C5] pb-3">
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
 
-                      <span className="font-mono text-xs font-bold text-gray-900">
+                      <span className="font-mono text-xs font-bold text-[#9c6a3a]">
                         {getTicketId(ticket._id)}
                       </span>
 
@@ -701,7 +684,7 @@ const MyTickets = () => {
                         •
                       </span>
 
-                      <span className="text-[11px] font-medium text-gray-500">
+                      <span className="text-[11px] font-medium text-[#9c6a3a]">
                         {ticket.category}
                       </span>
 
@@ -726,11 +709,11 @@ const MyTickets = () => {
 
                     <div className="md:col-span-8 space-y-2">
 
-                      <h3 className="text-lg font-serif font-bold text-gray-900 leading-snug hover:underline cursor-pointer">
+                      <h3 className="text-lg font-serif font-bold text-[#9c6a3a] leading-snug hover:underline cursor-pointer">
                         {ticket.subject}
                       </h3>
 
-                      <p className="text-xs text-gray-600 leading-relaxed italic bg-[#F2EDE4]/60 p-3 rounded border border-gray-200/60">
+                      <p className="text-xs text-gray-600 leading-relaxed italic bg-[#F2EDE4]/60 p-3 rounded border border-[#CFC7BB]">
                         "{ticket.description}"
                       </p>
 
@@ -740,32 +723,14 @@ const MyTickets = () => {
 
                     <div className="md:col-span-4 flex flex-col items-start md:items-end justify-between h-full space-y-3">
 
-                      <div className="bg-[#F2EDE4] p-2.5 rounded border border-gray-300/50 flex items-center gap-2.5 max-w-xs w-full">
-
-                        <div className="w-8 h-8 rounded bg-amber-800 text-white font-serif font-bold flex items-center justify-center text-xs flex-shrink-0">
-                          AD
-                        </div>
-
-                        <div className="min-w-0">
-
-                          <div className="font-semibold text-xs text-gray-900 truncate">
-                            Author Support Desk
-                          </div>
-
-                          <div className="text-[10px] text-gray-500 truncate">
-                            Managing Editorial Team
-                          </div>
-
-                        </div>
-
-                      </div>
+                   
 
                       <button
                         onClick={() => {
                           window.location.href =
                             `/author/tickets/${ticket._id}`;
                         }}
-                        className="px-4 py-2 bg-white hover:bg-gray-100 border border-gray-300 text-gray-900 text-xs font-semibold rounded flex items-center gap-1.5 transition shadow-2xs"
+                        className="w-full md:w-auto px-4 py-2 bg-[#9c6a3a]   text-white text-xs font-semibold rounded flex items-center justify-center gap-1.5"
                       >
 
                         <span>
@@ -775,7 +740,7 @@ const MyTickets = () => {
                             : 'Open Ticket Dossier'}
                         </span>
 
-                        <ArrowUpRight className="w-3.5 h-3.5 text-gray-600" />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-[#9c6a3a]" />
 
                       </button>
 
@@ -785,11 +750,11 @@ const MyTickets = () => {
 
                   {/* Footer */}
 
-                  <div className="pt-3 border-t border-gray-200/80 flex flex-wrap items-center justify-between text-xs text-gray-500">
+                  <div className="pt-3 border-t border-[#D8D0C5] flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-3 text-xs text-gray-500">
 
                     <div className="flex items-center gap-2">
 
-                      <BookOpen className="w-3.5 h-3.5 text-amber-800" />
+                      <BookOpen className="w-3.5 h-3.5 text-[#9c6a3a]" />
 
                       <span className="font-medium text-gray-800">
 
@@ -800,13 +765,13 @@ const MyTickets = () => {
 
                     </div>
 
-                    <div className="flex items-center gap-3 text-[11px]">
+                    <div className="flex flex-wrap items-center gap-3 text-[11px]">
 
                       <span>
                         Logged: {formatDate(ticket.createdAt)}
                       </span>
 
-                      <span className="font-semibold text-amber-900">
+                      <span className="font-semibold text-[#9c6a3a]">
                         • Updated {getTimeAgo(ticket.updatedAt)}
                       </span>
 
@@ -821,43 +786,7 @@ const MyTickets = () => {
 
         </div>
 
-        {/* --- BOTTOM CALLOUT BANNER --- */}
-
-        <div className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-
-          <div className="flex items-center gap-3">
-
-            <div className="p-2.5 bg-[#F2EDE4] border border-gray-300/50 rounded text-amber-800 flex-shrink-0">
-
-              <FileText className="w-5 h-5" />
-
-            </div>
-
-            <div>
-
-              <h4 className="font-serif font-bold text-sm text-gray-900">
-                Need an immediate editorial clarification?
-              </h4>
-
-              <p className="text-xs text-gray-500">
-                Managing editors review manuscript and ledger inquiries Mon–Fri, 9:00 AM – 6:00 PM IST.
-              </p>
-
-            </div>
-
-          </div>
-
-          <button
-            onClick={() => {
-              window.location.href =
-                '/author/submit-query';
-            }}
-            className="px-4 py-2.5 bg-black hover:bg-gray-800 text-white rounded text-xs font-semibold transition whitespace-nowrap shadow-xs"
-          >
-            Draft New Dispatch
-          </button>
-
-        </div>
+       
 
       </div>
 
@@ -866,4 +795,3 @@ const MyTickets = () => {
 };
 
 export default MyTickets;
-

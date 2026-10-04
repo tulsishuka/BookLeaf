@@ -1,4 +1,6 @@
+
 /* eslint-disable react-hooks/set-state-in-effect */
+
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
@@ -47,26 +49,31 @@ const AuthorLayout = () => {
   const navItems = [
     {
       label: "Dashboard",
+      shortLabel: "Home",
       path: "/author/dashboard",
       icon: LayoutDashboard,
     },
     {
       label: "My Books",
+      shortLabel: "Books",
       path: "/author/books",
       icon: BookOpen,
     },
     {
       label: "Submit Query",
+      shortLabel: "Query",
       path: "/author/submit-query",
       icon: Send,
     },
     {
       label: "My Tickets",
+      shortLabel: "Tickets",
       path: "/author/tickets",
       icon: Ticket,
     },
     {
       label: "Account",
+      shortLabel: "Account",
       path: "/author/account",
       icon: User,
     },
@@ -86,48 +93,42 @@ const AuthorLayout = () => {
   };
 
   return (
-    <div className="h-screen w-full bg-[#F7F3EC] flex overflow-hidden">
-
-      {/* SIDEBAR */}
+    <div className="min-h-screen w-full bg-[#e4dac9]/70 overflow-hidden">
       <aside
         className="
+          hidden
+          md:flex
+          fixed
+          left-0
+          top-0
+          z-40
           h-screen
-          w-64
+          w-56
+          lg:w-64
           shrink-0
           bg-[#F8F5EE]
           border-r
           border-gray-200
-          flex
           flex-col
           justify-between
-          p-6
+          p-4
+          lg:p-6
         "
       >
 
-        {/* TOP */}
         <div>
 
-          {/* LOGO */}
-          <div className="flex items-center gap-3 mb-10">
 
-            <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-serif text-lg">
-              B
+          <div className="mb-8 px-2 lg:px-1">
+            <div className="font-serif text-xl lg:text-2xl font-bold text-[#9c6a3a]">
+               Author Portal
             </div>
 
-            <div>
-              <h1 className="font-serif text-lg text-[#1c1917]">
-                BookLeaf
-              </h1>
-
-              <p className="text-[10px] uppercase tracking-[0.18em] text-[#9c6a3a]">
-                Author Portal
-              </p>
-            </div>
-
+            
           </div>
 
-          {/* NAVIGATION */}
-          <nav className="space-y-2">
+
+          <nav className="space-y-1.5">
 
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -138,38 +139,60 @@ const AuthorLayout = () => {
                   key={item.path}
                   to={item.path}
                   className={`
-                    flex items-center gap-3
-                    px-4 py-3
+                    flex
+                    items-center
+                    gap-3
+                    px-3
+                    lg:px-4
+                    py-2.5
+                    lg:py-3
                     rounded-xl
-                    text-sm
+                    text-xs
+                    lg:text-sm
                     transition-all
+                    duration-200
                     ${
                       active
-                        ? "bg-black text-white"
+                        ? "bg-[#9c6a3a] text-white shadow-sm"
                         : "text-[#574f46] hover:bg-[#ede7dc]"
                     }
                   `}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4 shrink-0" />
 
-                  <span>{item.label}</span>
+                  <span className="truncate">
+                    {item.label}
+                  </span>
                 </Link>
               );
             })}
 
           </nav>
-
         </div>
 
 
-        {/* BOTTOM USER */}
         <div>
 
           <div className="border-t border-gray-200 pt-5">
 
-            <div className="flex items-center gap-3 mb-4">
+            {/* USER */}
 
-              <div className="w-10 h-10 rounded-full bg-[#E8DED0] flex items-center justify-center text-[#6B4F35] font-serif">
+            <div className="flex items-center gap-3 mb-4 min-w-0">
+
+              <div
+                className="
+                  w-10
+                  h-10
+                  rounded-full
+                  bg-[#E8DED0]
+                  flex
+                  items-center
+                  justify-center
+                  text-[#6B4F35]
+                  font-serif
+                  shrink-0
+                "
+              >
                 {user?.name
                   ? user.name.charAt(0).toUpperCase()
                   : "A"}
@@ -190,6 +213,7 @@ const AuthorLayout = () => {
             </div>
 
             {/* LOGOUT */}
+
             <button
               type="button"
               onClick={handleLogout}
@@ -198,29 +222,137 @@ const AuthorLayout = () => {
                 flex
                 items-center
                 gap-3
-                px-4
-                py-3
+                px-3
+                lg:px-4
+                py-2.5
+                lg:py-3
                 rounded-xl
-                text-sm
+                text-xs
+                lg:text-sm
                 text-[#574f46]
                 hover:bg-[#ede7dc]
                 transition
               "
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4 shrink-0" />
 
-              <span>Logout</span>
+              <span>
+                Logout
+              </span>
             </button>
 
           </div>
-
         </div>
 
       </aside>
 
+      {/* ===================================================== */}
+      {/* MOBILE BOTTOM NAVIGATION */}
+      {/* ===================================================== */}
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 min-w-0 h-screen overflow-y-auto">
+      <nav
+        className="
+          md:hidden
+          fixed
+          bottom-0
+          left-0
+          right-0
+          z-50
+          bg-[#F8F5EE]
+          border-t
+          border-gray-200
+          shadow-[0_-4px_20px_rgba(0,0,0,0.06)]
+          px-1
+          pt-2
+          pb-[calc(0.5rem+env(safe-area-inset-bottom))]
+        "
+      >
+
+        <div className="grid grid-cols-5 gap-1">
+
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  gap-1
+                  py-1.5
+                  rounded-xl
+                  transition-all
+                  duration-200
+                  ${
+                    active
+                      ? "text-black"
+                      : "text-[#8b8176]"
+                  }
+                `}
+              >
+
+                <div
+                  className={`
+                    flex
+                    items-center
+                    justify-center
+                    w-9
+                    h-7
+                    rounded-lg
+                    transition
+                    ${
+                      active
+                        ? "bg-black text-white"
+                        : "bg-transparent"
+                    }
+                  `}
+                >
+                  <Icon className="w-4 h-4" />
+                </div>
+
+                <span
+                  className={`
+                    text-[9px]
+                    font-medium
+                    leading-none
+                    ${
+                      active
+                        ? "text-black font-semibold"
+                        : "text-[#8b8176]"
+                    }
+                  `}
+                >
+                  {item.shortLabel}
+                </span>
+
+              </Link>
+            );
+          })}
+
+        </div>
+
+      </nav>
+
+
+      <main
+        className="
+          min-h-screen
+          w-full
+          md:ml-56
+          lg:ml-64
+          md:w-[calc(100%-14rem)]
+          lg:w-[calc(100%-16rem)]
+          overflow-x-hidden
+          overflow-y-auto
+          pb-24
+          md:pb-0
+        "
+      >
 
         <Outlet />
 

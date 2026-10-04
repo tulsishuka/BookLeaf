@@ -237,19 +237,19 @@ const TicketQueue = () => {
   ) => {
     switch (priority) {
       case 'Critical':
-        return 'bg-red-100 text-red-700 border-red-200';
+        return 'bg-[#FFF0EF] text-[#B42318] border-[#F5C7C3]';
 
       case 'High':
-        return 'bg-orange-100 text-orange-700 border-orange-200';
+        return 'bg-[#FFF4E8] text-[#B54708] border-[#F5D6AE]';
 
       case 'Medium':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return 'bg-[#FFF9DF] text-[#946200] border-[#EADCA7]';
 
       case 'Low':
-        return 'bg-gray-100 text-gray-600 border-gray-200';
+        return 'bg-[#EEF8F0] text-[#26734D] border-[#C9E4D1]';
 
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-[#F3F1EC] text-[#55524B] border-[#DED8CF]';
     }
   };
 
@@ -262,19 +262,19 @@ const TicketQueue = () => {
   ) => {
     switch (status) {
       case 'Open':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-[#EEF5FF] text-[#315F9D] border border-[#D5E4F8]';
 
       case 'In Progress':
-        return 'bg-purple-100 text-purple-700';
+        return 'bg-[#F4EFFB] text-[#7045A5] border border-[#E3D7F7]';
 
       case 'Resolved':
-        return 'bg-green-100 text-green-700';
+        return 'bg-[#EEF8F0] text-[#26734D] border border-[#C9E4D1]';
 
       case 'Closed':
-        return 'bg-gray-200 text-gray-600';
+        return 'bg-[#F1F0ED] text-[#5E5B55] border border-[#DED8CF]';
 
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-[#F3F1EC] text-[#55524B] border border-[#DED8CF]';
     }
   };
 
@@ -284,17 +284,19 @@ const TicketQueue = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] p-8">
+      <div className="min-h-screen bg-[#FDFBF7] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
 
         <div className="flex items-center gap-3 mb-8">
-          <RefreshCw className="w-6 h-6 animate-spin text-gray-700" />
+          <div className="w-10 h-10 rounded-full bg-[#F2EDE4] border border-[#D8CFC4] flex items-center justify-center">
+            <RefreshCw className="w-5 h-5 animate-spin text-[#6F6A63]" />
+          </div>
 
           <div>
-            <h1 className="font-serif text-2xl font-bold text-gray-900">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#1C1C1C]">
               Ticket Queue
             </h1>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[#6F6A63] mt-1">
               Fetching all author queries...
             </p>
           </div>
@@ -304,7 +306,7 @@ const TicketQueue = () => {
           {[1, 2, 3, 4, 5].map((item) => (
             <div
               key={item}
-              className="h-28 bg-[#F2EDE4] rounded-xl animate-pulse"
+              className="h-32 bg-[#F2EDE4] border border-[#E5DED4] rounded-2xl animate-pulse"
             />
           ))}
         </div>
@@ -319,24 +321,26 @@ const TicketQueue = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-8">
+      <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-5 sm:p-8">
 
-        <div className="max-w-lg w-full bg-white border border-red-200 rounded-xl p-8 text-center">
+        <div className="max-w-lg w-full bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-7 sm:p-9 text-center shadow-[0_10px_40px_rgba(43,36,30,0.05)]">
 
-          <AlertTriangle className="w-10 h-10 text-red-500 mx-auto mb-4" />
+          <div className="w-14 h-14 mx-auto rounded-full bg-[#FFF0EF] border border-[#F5C7C3] flex items-center justify-center">
+            <AlertTriangle className="w-6 h-6 text-[#B42318]" />
+          </div>
 
-          <h2 className="font-serif text-xl font-bold text-gray-900">
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#1C1C1C] mt-5">
             Unable to load queries
           </h2>
 
-          <p className="text-sm text-red-600 mt-2">
+          <p className="text-sm text-[#B42318] mt-2 leading-6">
             {error}
           </p>
 
           <button
             type="button"
             onClick={fetchAllTickets}
-            className="mt-6 px-5 py-2.5 bg-black text-white rounded-lg text-xs font-semibold flex items-center gap-2 mx-auto"
+            className="mt-7 px-5 py-2.5 bg-[#2B241E] text-white rounded-lg text-xs font-semibold flex items-center gap-2 mx-auto hover:bg-[#1C1C1C] transition"
           >
             <RefreshCw className="w-4 h-4" />
             Try Again
@@ -353,35 +357,35 @@ const TicketQueue = () => {
   // ==================================================
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-gray-800">
+    <div className="min-h-screen bg-[#FDFBF7] text-[#1C1C1C]">
 
       {/* ================================================= */}
       {/* HEADER */}
       {/* ================================================= */}
 
-      <div className="border-b border-gray-200 bg-[#FDFBF7]">
+      <div className="border-b border-[#D8CFC4] bg-[#FDFBF7]">
 
-        <div className="px-8 py-7">
+        <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
 
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
 
             <div>
 
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-3">
 
-                <span className="w-2 h-2 rounded-full bg-amber-800" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#9C6A3A]" />
 
-                <span className="text-[10px] font-mono tracking-widest text-amber-900 uppercase font-bold">
+                <span className="text-[10px] font-mono tracking-[0.2em] text-[#9C6A3A] uppercase font-bold">
                   Operations Console
                 </span>
 
               </div>
 
-              <h1 className="font-serif text-3xl font-bold text-gray-900">
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1C1C1C]">
                 Ticket Queue
               </h1>
 
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm sm:text-base text-[#6F6A63] mt-2">
                 All queries submitted by authors.
               </p>
 
@@ -390,7 +394,7 @@ const TicketQueue = () => {
             <button
               type="button"
               onClick={fetchAllTickets}
-              className="self-start lg:self-auto flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs font-semibold hover:bg-gray-50"
+              className="self-start lg:self-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#F8F5EE] border border-[#D8CFC4] rounded-lg text-xs font-semibold text-[#2B241E] hover:bg-[#F2EDE4] hover:border-[#9C6A3A] transition"
             >
               <RefreshCw className="w-4 h-4" />
               Refresh
@@ -406,27 +410,35 @@ const TicketQueue = () => {
       {/* CONTENT */}
       {/* ================================================= */}
 
-      <div className="p-8">
+      <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1800px] mx-auto">
 
         {/* ================================================= */}
         {/* STATS */}
         {/* ================================================= */}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-7">
 
           {/* TOTAL */}
 
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <div className="group bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
-            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+            <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
               Total Queries
             </p>
 
-            <p className="text-3xl font-serif font-bold mt-2 text-gray-900">
-              {tickets.length}
-            </p>
+            <div className="flex items-end justify-between gap-3 mt-3">
 
-            <p className="text-xs text-gray-400 mt-1">
+              <p className="text-3xl sm:text-4xl font-serif font-bold text-[#1C1C1C]">
+                {tickets.length}
+              </p>
+
+              <span className="w-9 h-9 rounded-full bg-[#F2EDE4] flex items-center justify-center">
+                <Inbox className="w-4 h-4 text-[#9C6A3A]" />
+              </span>
+
+            </div>
+
+            <p className="text-xs text-[#99938A] mt-2">
               All submitted tickets
             </p>
 
@@ -434,22 +446,30 @@ const TicketQueue = () => {
 
           {/* OPEN */}
 
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <div className="group bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
-            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+            <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
               Open
             </p>
 
-            <p className="text-3xl font-serif font-bold mt-2 text-blue-700">
-              {
-                tickets.filter(
-                  (ticket) =>
-                    ticket.status === 'Open'
-                ).length
-              }
-            </p>
+            <div className="flex items-end justify-between gap-3 mt-3">
 
-            <p className="text-xs text-gray-400 mt-1">
+              <p className="text-3xl sm:text-4xl font-serif font-bold text-[#315F9D]">
+                {
+                  tickets.filter(
+                    (ticket) =>
+                      ticket.status === 'Open'
+                  ).length
+                }
+              </p>
+
+              <span className="w-9 h-9 rounded-full bg-[#EEF5FF] flex items-center justify-center">
+                <Clock className="w-4 h-4 text-[#315F9D]" />
+              </span>
+
+            </div>
+
+            <p className="text-xs text-[#99938A] mt-2">
               Awaiting action
             </p>
 
@@ -457,22 +477,30 @@ const TicketQueue = () => {
 
           {/* CRITICAL */}
 
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <div className="group bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
-            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+            <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
               Critical
             </p>
 
-            <p className="text-3xl font-serif font-bold mt-2 text-red-600">
-              {
-                tickets.filter(
-                  (ticket) =>
-                    ticket.priority === 'Critical'
-                ).length
-              }
-            </p>
+            <div className="flex items-end justify-between gap-3 mt-3">
 
-            <p className="text-xs text-gray-400 mt-1">
+              <p className="text-3xl sm:text-4xl font-serif font-bold text-[#B42318]">
+                {
+                  tickets.filter(
+                    (ticket) =>
+                      ticket.priority === 'Critical'
+                  ).length
+                }
+              </p>
+
+              <span className="w-9 h-9 rounded-full bg-[#FFF0EF] flex items-center justify-center">
+                <AlertTriangle className="w-4 h-4 text-[#B42318]" />
+              </span>
+
+            </div>
+
+            <p className="text-xs text-[#99938A] mt-2">
               Needs immediate attention
             </p>
 
@@ -480,22 +508,30 @@ const TicketQueue = () => {
 
           {/* IN PROGRESS */}
 
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <div className="group bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
-            <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+            <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
               In Progress
             </p>
 
-            <p className="text-3xl font-serif font-bold mt-2 text-purple-700">
-              {
-                tickets.filter(
-                  (ticket) =>
-                    ticket.status === 'In Progress'
-                ).length
-              }
-            </p>
+            <div className="flex items-end justify-between gap-3 mt-3">
 
-            <p className="text-xs text-gray-400 mt-1">
+              <p className="text-3xl sm:text-4xl font-serif font-bold text-[#7045A5]">
+                {
+                  tickets.filter(
+                    (ticket) =>
+                      ticket.status === 'In Progress'
+                  ).length
+                }
+              </p>
+
+              <span className="w-9 h-9 rounded-full bg-[#F4EFFB] flex items-center justify-center">
+                <RefreshCw className="w-4 h-4 text-[#7045A5]" />
+              </span>
+
+            </div>
+
+            <p className="text-xs text-[#99938A] mt-2">
               Currently being handled
             </p>
 
@@ -507,7 +543,7 @@ const TicketQueue = () => {
         {/* SEARCH + FILTER */}
         {/* ================================================= */}
 
-        <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6">
+        <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-4 sm:p-5 mb-7">
 
           <div className="flex flex-col lg:flex-row gap-3">
 
@@ -515,7 +551,7 @@ const TicketQueue = () => {
 
             <div className="relative flex-1">
 
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#99938A]" />
 
               <input
                 type="text"
@@ -524,7 +560,7 @@ const TicketQueue = () => {
                   setSearch(e.target.value)
                 }
                 placeholder="Search subject, author, book, category..."
-                className="w-full bg-[#FDFBF7] border border-gray-200 rounded-lg py-2.5 pl-10 pr-4 text-sm outline-none focus:border-amber-800"
+                className="w-full h-11 bg-[#FDFBF7] border border-[#D8CFC4] rounded-lg py-2.5 pl-10 pr-4 text-sm text-[#1C1C1C] placeholder:text-[#99938A] outline-none focus:border-[#9C6A3A] focus:ring-1 focus:ring-[#9C6A3A]/20 transition"
               />
 
             </div>
@@ -533,7 +569,9 @@ const TicketQueue = () => {
 
             <div className="flex items-center gap-2">
 
-              <Filter className="w-4 h-4 text-gray-400" />
+              <div className="hidden sm:flex w-9 h-9 rounded-lg bg-[#F2EDE4] items-center justify-center">
+                <Filter className="w-4 h-4 text-[#6F6A63]" />
+              </div>
 
               <select
                 value={statusFilter}
@@ -544,7 +582,7 @@ const TicketQueue = () => {
                       | TicketStatus
                   )
                 }
-                className="bg-[#FDFBF7] border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none"
+                className="w-full lg:w-auto h-11 bg-[#FDFBF7] border border-[#D8CFC4] rounded-lg px-3 text-sm text-[#1C1C1C] outline-none focus:border-[#9C6A3A] transition cursor-pointer"
               >
 
                 <option value="All">
@@ -582,7 +620,7 @@ const TicketQueue = () => {
                     | TicketPriority
                 )
               }
-              className="bg-[#FDFBF7] border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none"
+              className="w-full lg:w-auto h-11 bg-[#FDFBF7] border border-[#D8CFC4] rounded-lg px-3 text-sm text-[#1C1C1C] outline-none focus:border-[#9C6A3A] transition cursor-pointer"
             >
 
               <option value="All">
@@ -611,22 +649,25 @@ const TicketQueue = () => {
 
         </div>
 
-       
-        <div className="flex items-center justify-between mb-3">
+        {/* ================================================= */}
+        {/* SUBMITTED QUERIES HEADER */}
+        {/* ================================================= */}
+
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
 
           <div>
 
-            <span className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
+            <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#9C6A3A]">
               Submitted Queries
             </span>
 
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-[#6F6A63] mt-1">
               Showing{' '}
-              <span className="font-bold text-gray-900">
+              <span className="font-bold text-[#1C1C1C]">
                 {filteredTickets.length}
               </span>{' '}
               of{' '}
-              <span className="font-bold text-gray-900">
+              <span className="font-bold text-[#1C1C1C]">
                 {tickets.length}
               </span>{' '}
               queries
@@ -644,19 +685,19 @@ const TicketQueue = () => {
 
           {filteredTickets.length === 0 ? (
 
-            <div className="bg-white border border-gray-200 rounded-xl p-14 text-center">
+            <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-12 sm:p-16 text-center">
 
-              <div className="w-14 h-14 mx-auto rounded-full bg-[#F2EDE4] flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-[#F2EDE4] border border-[#D8CFC4] flex items-center justify-center">
 
-                <Inbox className="w-6 h-6 text-gray-500" />
+                <Inbox className="w-7 h-7 text-[#6F6A63]" />
 
               </div>
 
-              <h3 className="font-serif font-bold text-lg mt-4">
+              <h3 className="font-serif font-bold text-xl text-[#1C1C1C] mt-5">
                 No queries found
               </h3>
 
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-[#6F6A63] mt-2 max-w-md mx-auto leading-6">
                 No submitted author queries match your filters.
               </p>
 
@@ -666,274 +707,147 @@ const TicketQueue = () => {
 
             filteredTickets.map((ticket) => (
 
-              // <button
-              //   key={ticket._id}
-              //   type="button"
-              //   onClick={() =>
-              //     navigate(
-              //       `/admin/tickets/${ticket._id}`
-              //     )
-              //   }
-              //   className="w-full text-left bg-white border border-red-900 rounded-xl p-5 hover:border-gray-400 hover:shadow-sm transition group"
-              // >
+              <button
+                key={ticket._id}
+                type="button"
+                onClick={() =>
+                  navigate(
+                    `/admin/tickets/${ticket._id}`
+                  )
+                }
+                className="w-full text-left bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:bg-[#FAF7F1] hover:border-[#BCA993] hover:shadow-[0_10px_30px_rgba(43,36,30,0.06)] transition-all duration-200 group"
+              >
 
-              //   <div className="flex flex-col xl:flex-row xl:items-center gap-5">
+                <div className="flex flex-col xl:flex-row xl:items-center gap-5 xl:gap-6">
 
-              //     {/* ===================================== */}
-              //     {/* QUERY */}
-              //     {/* ===================================== */}
+                  {/* QUERY */}
 
-              //     <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0">
 
-              //       <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
 
-              //         <span className="font-mono text-[10px] text-gray-400">
-              //           #
-              //           {ticket._id
-              //             .slice(-6)
-              //             .toUpperCase()}
-              //         </span>
+                      <span className="font-mono text-[10px] tracking-wide text-[#99938A]">
+                        #{ticket._id.slice(-6).toUpperCase()}
+                      </span>
 
-              //         <span
-              //           className={`px-2 py-1 rounded-full text-[10px] font-bold border ${getPriorityStyle(
-              //             ticket.priority
-              //           )}`}
-              //         >
-              //           {ticket.priority}
-              //         </span>
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${getPriorityStyle(
+                          ticket.priority
+                        )}`}
+                      >
+                        {ticket.priority}
+                      </span>
 
-              //         <span
-              //           className={`px-2 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(
-              //             ticket.status
-              //           )}`}
-              //         >
-              //           {ticket.status}
-              //         </span>
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(
+                          ticket.status
+                        )}`}
+                      >
+                        {ticket.status}
+                      </span>
 
-              //       </div>
+                    </div>
 
-              //       <h3 className="font-serif font-bold text-lg text-gray-900 mt-2">
-              //         {ticket.subject}
-              //       </h3>
+                    <h3 className="font-serif font-bold text-lg sm:text-xl text-[#1C1C1C] mt-3 group-hover:text-[#9C6A3A] transition-colors">
+                      {ticket.subject}
+                    </h3>
 
-              //       <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-              //         {ticket.description}
-              //       </p>
+                    <p className="text-sm text-[#6F6A63] mt-1.5 line-clamp-2 leading-6">
+                      {ticket.description}
+                    </p>
 
-              //       <div className="flex flex-wrap items-center gap-2 mt-3">
+                    <div className="flex flex-wrap items-center gap-2 mt-4">
 
-              //         <span className="text-[10px] bg-[#F2EDE4] text-gray-600 px-2 py-1 rounded">
-              //           {ticket.category}
-              //         </span>
+                      <span className="text-[10px] bg-[#F2EDE4] border border-[#E5DED4] text-[#6F6A63] px-2.5 py-1.5 rounded-md">
+                        {ticket.category}
+                      </span>
 
-              //       </div>
+                    </div>
 
-              //     </div>
+                  </div>
 
-              //     {/* ===================================== */}
-              //     {/* AUTHOR */}
-              //     {/* ===================================== */}
+                  {/* AUTHOR */}
 
-              //     <div className="xl:w-48">
+                  <div className="xl:w-48 border-t xl:border-t-0 xl:border-l border-[#E5DED4] pt-4 xl:pt-0 xl:pl-5">
 
-              //       <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
-              //         Author
-              //       </p>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
+                      Author
+                    </p>
 
-              //       <p className="text-sm font-semibold text-gray-900 mt-1">
-              //         {ticket.authorId}
-              //       </p>
+                    <p className="text-sm font-semibold text-[#1C1C1C] mt-2 truncate">
+                      {ticket.authorId}
+                    </p>
 
-              //       <p className="text-[10px] text-gray-400 mt-1">
-              //         Author ID
-              //       </p>
+                    <p className="text-[10px] text-[#99938A] mt-1">
+                      Author ID
+                    </p>
 
-              //     </div>
+                  </div>
 
-              //     {/* ===================================== */}
-              //     {/* BOOK */}
-              //     {/* ===================================== */}
+                  {/* BOOK */}
 
-              //     <div className="xl:w-52">
+                  <div className="xl:w-52 border-t xl:border-t-0 xl:border-l border-[#E5DED4] pt-4 xl:pt-0 xl:pl-5">
 
-              //       <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
-              //         Book
-              //       </p>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
+                      Book
+                    </p>
 
-              //       {ticket.bookId ? (
+                    {ticket.bookId ? (
 
-              //         <>
-              //           <p className="text-sm font-semibold text-gray-900 mt-1 truncate">
-              //             {ticket.bookId.title}
-              //           </p>
+                      <>
+                        <p className="text-sm font-semibold text-[#1C1C1C] mt-2 truncate">
+                          {ticket.bookId.title}
+                        </p>
 
-              //           <p className="text-[10px] text-gray-400 font-mono mt-1">
-              //             ISBN: {ticket.bookId.isbn}
-              //           </p>
-              //         </>
+                        <p className="text-[10px] text-[#99938A] font-mono mt-1">
+                          ISBN: {ticket.bookId.isbn}
+                        </p>
+                      </>
 
-              //       ) : (
+                    ) : (
 
-              //         <p className="text-xs text-gray-500 mt-1">
-              //           General / Account Level
-              //         </p>
+                      <p className="text-xs text-[#6F6A63] mt-2">
+                        General / Account Level
+                      </p>
 
-              //       )}
+                    )}
 
-              //     </div>
+                  </div>
 
-              //     {/* ===================================== */}
-              //     {/* DATE */}
-              //     {/* ===================================== */}
+                  {/* DATE */}
 
-              //     <div className="xl:w-32 xl:text-right">
+                  <div className="xl:w-32 border-t xl:border-t-0 xl:border-l border-[#E5DED4] pt-4 xl:pt-0 xl:pl-5 xl:text-right">
 
-              //       <div className="flex xl:justify-end items-center gap-1.5 text-gray-400">
+                    <div className="flex xl:justify-end items-center gap-1.5 text-[#99938A]">
 
-              //         <Clock className="w-3.5 h-3.5" />
+                      <Clock className="w-3.5 h-3.5" />
 
-              //         <span className="text-xs">
-              //           {formatDate(
-              //             ticket.createdAt
-              //           )}
-              //         </span>
+                      <span className="text-xs">
+                        {formatDate(ticket.createdAt)}
+                      </span>
 
-              //       </div>
+                    </div>
 
-              //       <p className="text-[10px] text-gray-400 mt-1">
-              //         {formatTime(
-              //           ticket.createdAt
-              //         )}
-              //       </p>
+                    <p className="text-[10px] text-[#99938A] mt-1">
+                      {formatTime(ticket.createdAt)}
+                    </p>
 
-              //     </div>
+                  </div>
 
-              //     {/* ===================================== */}
-              //     {/* ARROW */}
-              //     {/* ===================================== */}
+                  {/* ARROW */}
 
-              //     <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-black transition flex-shrink-0" />
+                  <div className="hidden xl:flex w-9 h-9 rounded-full bg-[#F2EDE4] items-center justify-center flex-shrink-0 group-hover:bg-[#2B241E] transition-colors">
 
-              //   </div>
+                    <ChevronRight className="w-4 h-4 text-[#99938A] group-hover:text-white transition-colors" />
 
-              // </button>
-<button
-  key={ticket._id}
-  type="button"
-  onClick={() => navigate(`/admin/tickets/${ticket._id}`)}
-  className="w-full text-left bg-white border border-red-900 rounded-xl p-5 hover:border-gray-400 hover:shadow-sm transition group"
->
-  <div className="flex flex-col xl:flex-row xl:items-center gap-5">
+                  </div>
 
-    {/* QUERY */}
-    <div className="flex-1 min-w-0">
+                  <ChevronRight className="xl:hidden w-5 h-5 text-[#B8B1A8] group-hover:text-[#9C6A3A] transition flex-shrink-0" />
 
-      <div className="flex flex-wrap items-center gap-2">
+                </div>
 
-        <span className="font-mono text-[10px] text-gray-400">
-          #{ticket._id.slice(-6).toUpperCase()}
-        </span>
+              </button>
 
-        <span
-          className={`px-2 py-1 rounded-full text-[10px] font-bold border ${getPriorityStyle(
-            ticket.priority
-          )}`}
-        >
-          {ticket.priority}
-        </span>
-
-        <span
-          className={`px-2 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(
-            ticket.status
-          )}`}
-        >
-          {ticket.status}
-        </span>
-
-      </div>
-
-      <h3 className="font-serif font-bold text-lg text-gray-900 mt-2">
-        {ticket.subject}
-      </h3>
-
-      <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-        {ticket.description}
-      </p>
-
-      <div className="flex flex-wrap items-center gap-2 mt-3">
-        <span className="text-[10px] bg-[#F2EDE4] text-gray-600 px-2 py-1 rounded">
-          {ticket.category}
-        </span>
-      </div>
-
-    </div>
-
-    {/* AUTHOR */}
-    <div className="xl:w-48">
-
-      <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
-        Author
-      </p>
-
-      <p className="text-sm font-semibold text-gray-900 mt-1">
-        {ticket.authorId}
-      </p>
-
-      <p className="text-[10px] text-gray-400 mt-1">
-        Author ID
-      </p>
-
-    </div>
-
-    {/* BOOK */}
-    <div className="xl:w-52">
-
-      <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
-        Book
-      </p>
-
-      {ticket.bookId ? (
-        <>
-          <p className="text-sm font-semibold text-gray-900 mt-1 truncate">
-            {ticket.bookId.title}
-          </p>
-
-          <p className="text-[10px] text-gray-400 font-mono mt-1">
-            ISBN: {ticket.bookId.isbn}
-          </p>
-        </>
-      ) : (
-        <p className="text-xs text-gray-500 mt-1">
-          General / Account Level
-        </p>
-      )}
-
-    </div>
-
-    {/* DATE */}
-    <div className="xl:w-32 xl:text-right">
-
-      <div className="flex xl:justify-end items-center gap-1.5 text-gray-400">
-
-        <Clock className="w-3.5 h-3.5" />
-
-        <span className="text-xs">
-          {formatDate(ticket.createdAt)}
-        </span>
-
-      </div>
-
-      <p className="text-[10px] text-gray-400 mt-1">
-        {formatTime(ticket.createdAt)}
-      </p>
-
-    </div>
-
-    {/* ARROW */}
-    <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-black transition flex-shrink-0" />
-
-  </div>
-</button>
             ))
 
           )}

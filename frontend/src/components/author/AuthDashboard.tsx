@@ -10,12 +10,10 @@ import {
   MessageSquare,
   ArrowUpRight,
   ChevronRight,
-  Plus,
-  Clock,
   CheckCircle2,
-  HelpCircle,
-  FileText,
 } from 'lucide-react';
+import book1 from '../../assets/book1.png';
+import butterfly from '../../assets/butterfly.png';
 
 import api from '../../api/api';
 
@@ -70,17 +68,12 @@ const AuthDashboard = () => {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const response = await api.get(
-          '/auth/author/dashboard'
-        );
+        const response = await api.get('/auth/author/dashboard');
 
         setData(response.data);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        console.error(
-          'Dashboard error:',
-          error
-        );
+        console.error('Dashboard error:', error);
 
         setError(
           error.response?.data?.message ||
@@ -98,8 +91,8 @@ const AuthDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] p-6 lg:p-10 text-gray-800 font-sans">
-        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[500px]">
+      <div className="min-h-screen bg-[#FDFBF7] px-4 py-6 sm:p-6 lg:p-10 text-gray-800 font-sans">
+        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px] sm:min-h-[500px]">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin mx-auto mb-4" />
 
@@ -116,14 +109,14 @@ const AuthDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] p-6 lg:p-10 text-gray-800 font-sans">
-        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[500px]">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center max-w-md">
+      <div className="min-h-screen bg-[#FDFBF7] px-4 py-6 sm:p-6 lg:p-10 text-gray-800 font-sans">
+        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px] sm:min-h-[500px]">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-5 sm:p-6 text-center max-w-md w-full">
             <h2 className="font-serif font-bold text-lg text-red-900">
               Unable to load dashboard
             </h2>
 
-            <p className="text-sm text-red-600 mt-2">
+            <p className="text-sm text-red-600 mt-2 break-words">
               {error}
             </p>
           </div>
@@ -138,11 +131,7 @@ const AuthDashboard = () => {
 
   // ================= REAL DATA =================
 
-  const {
-    author,
-    stats,
-    books,
-  } = data;
+  const { author, stats, books } = data;
 
   // ================= TOP STATS =================
 
@@ -179,142 +168,105 @@ const AuthDashboard = () => {
   const activeBook =
     books.find(
       (book) =>
-        book.status
-          ?.toLowerCase()
-          .includes('production') ||
-        book.status
-          ?.toLowerCase()
-          .includes('progress')
+        book.status?.toLowerCase().includes('production') ||
+        book.status?.toLowerCase().includes('progress')
     ) || books[0];
 
   // ================= BOOK STATUS =================
 
-  const getStatusStyle = (
-    status: string
-  ) => {
-    const normalizedStatus =
-      status?.toLowerCase() || '';
+  const getStatusStyle = (status: string) => {
+    const normalizedStatus = status?.toLowerCase() || '';
 
     if (
       normalizedStatus.includes('production') ||
       normalizedStatus.includes('progress')
     ) {
-      return 'bg-orange-100 text-orange-800 border-orange-200';
+      return 'bg-[#9c6a3a] text-white border-[#9c6a3a]';
     }
 
     if (
       normalizedStatus.includes('publish') ||
       normalizedStatus.includes('complete')
     ) {
-      return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      return 'bg-[#9c6a3a] text-white border-[#9c6a3a]';
     }
 
     return 'bg-gray-100 text-gray-700 border-gray-300';
   };
 
-  // ================= BOOK IMAGE =================
+ 
 
-  const getBookImage = (
-    book: Book,
-    index: number
-  ) => {
-    if (book.coverImage) {
-      return book.coverImage;
-    }
+  const getBookImage = (book: Book, index: number) => {
+  if (book.coverImage) {
+    return book.coverImage;
+  }
 
-    const fallbackImages = [
-      'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=400',
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=400',
-      'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400',
-      'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=400',
-    ];
+  const fallbackImages = [
+    book1,
+    butterfly,
+  ];
 
-    return fallbackImages[
-      index % fallbackImages.length
-    ];
-  };
+  return fallbackImages[index % fallbackImages.length];
+};
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-6 lg:p-10 text-gray-800 font-sans">
+    <div className="min-h-screen bg-[#FDFBF7] px-4 py-5 sm:p-6 lg:p-10 text-gray-800 font-sans overflow-x-hidden">
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
 
-      <div className="max-w-7xl mx-auto space-y-8">
+      
+        <div className="flex flex-col gap-5 border-b border-gray-200/80 pb-5 sm:pb-6 md:flex-row md:items-center md:justify-between">
 
-        {/* --- TOP HEADER & ACTIONS --- */}
+          <div className="min-w-0">
+           
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-6">
-
-          <div>
-
-            <span className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">
-              EDITORIAL OVERVIEW | AUTUMN 2026
-            </span>
-
-            <h1 className="text-3xl lg:text-4xl font-serif font-bold text-gray-900 mt-0.5">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#9c6a3a] mt-1 break-words">
               Good morning, {author.name.split(' ')[0]}
             </h1>
 
-            <p className="text-xs lg:text-sm text-gray-600 mt-1 max-w-2xl">
+            <p className="text-xs sm:text-sm text-[#6e6357] mt-1 max-w-2xl leading-relaxed">
               Welcome back to your Bookleaf publishing portal.
-              Your books, royalties, and publishing information
-              are available here.
+              Your books, royalties, and publishing information are
+              available here.
             </p>
-
           </div>
 
-          <div className="flex items-center gap-3">
-
-            <button
-              type="button"
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#F2EDE4] hover:bg-[#EAE4D8] text-gray-800 rounded-md text-xs font-semibold border border-gray-300/60 transition"
-            >
-              <Clock className="w-3.5 h-3.5 text-gray-600" />
-
-              View Active Milestones
-            </button>
-
-            <Link
-              to="/author/submit-query"
-              className="flex items-center gap-2 px-5 py-2.5 bg-black hover:bg-gray-800 text-white rounded-md text-xs font-semibold shadow-sm transition"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-
-              Submit a Support Query
-            </Link>
-
-          </div>
-
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+  <Link
+    to="/author/submit-query"
+    className="flex w-full items-center justify-center gap-2 rounded-md bg-[#9c6a3a]  px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-gray-800 sm:w-auto sm:px-5"
+  >
+    <MessageSquare className="h-3.5 w-3.5 flex-shrink-0" />
+    <span className="whitespace-nowrap">Submit a Support Query</span>
+  </Link>
+</div>
         </div>
 
-        {/* --- TOP STATS ROW --- */}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 
           {topStats.map((stat, idx) => {
-
             const Icon = stat.icon;
 
             return (
               <div
                 key={idx}
-                className="p-5 rounded-lg border bg-[#F8F5EE] border-gray-200/80 flex flex-col justify-between"
+                className="p-4 sm:p-5 rounded-lg border bg-[#F8F5EE] border-[#9c6a3a] flex flex-col justify-between min-w-0"
               >
+                <div className="flex items-center justify-between gap-2">
 
-                <div className="flex items-center justify-between">
-
-                  <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+                  <span className="text-[9px] sm:text-[10px] font-bold tracking-wider text-gray-400 uppercase leading-tight">
                     {stat.title}
                   </span>
 
-                  <div className="p-1.5 rounded bg-white border border-gray-200 text-gray-700">
+                  <div className="p-1.5 rounded bg-white border border-gray-200 text-gray-700 flex-shrink-0">
                     <Icon className="w-4 h-4" />
                   </div>
 
                 </div>
 
                 <div className="my-3">
-
                   <span
-                    className={`text-3xl font-serif font-bold ${
+                    className={`text-2xl sm:text-3xl font-serif font-bold break-words ${
                       stat.highlight
                         ? 'text-amber-900'
                         : 'text-gray-900'
@@ -322,123 +274,121 @@ const AuthDashboard = () => {
                   >
                     {stat.value}
                   </span>
-
                 </div>
 
-                <div className="text-xs pt-2 border-t border-gray-200/80 text-gray-500 truncate">
+                <div className="text-[11px] sm:text-xs pt-2 border-t border-gray-200/80 text-gray-500 truncate">
                   {stat.subtext}
                 </div>
-
               </div>
             );
           })}
-
         </div>
 
-        {/* --- MIDDLE FEATURE: ACTIVE PRODUCTION WORKBENCH --- */}
+        {/* ================================================= */}
+        {/* ACTIVE PRODUCTION WORKBENCH */}
+        {/* ================================================= */}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
 
-          {/* Active Book Showcase */}
+          {/* ACTIVE BOOK */}
 
-          <div className="lg:col-span-5 bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-5 flex flex-col justify-between">
+          <div className="lg:col-span-5 bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 sm:p-5 flex flex-col justify-between min-w-0">
 
             <div>
 
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
 
-                <span className="bg-orange-100 text-orange-800 border border-orange-200 text-[10px] font-bold px-2 py-0.5 rounded tracking-wide uppercase">
+                <span
+                  className={`self-start max-w-full truncate ${getStatusStyle(
+                    activeBook?.status || ''
+                  )} text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded tracking-wide uppercase`}
+                >
                   {activeBook?.status || 'NO ACTIVE BOOK'}
                 </span>
 
-                <span className="text-[11px] font-mono text-gray-400">
+                <span className="text-[10px] sm:text-[11px] font-mono text-gray-400 truncate">
                   FOLIO NO. {activeBook?.bookId || '—'}
                 </span>
 
               </div>
 
               {activeBook ? (
-                <div className="flex gap-4 items-start">
+                <div className="flex gap-3 sm:gap-4 items-start min-w-0">
 
                   <img
-                    src={getBookImage(
-                      activeBook,
-                      0
-                    )}
+                    src={getBookImage(activeBook, 0)}
                     alt={activeBook.title}
-                    className="w-28 h-36 object-cover rounded border border-gray-300 shadow-sm flex-shrink-0"
+                    className="w-20 h-28 sm:w-24 sm:h-32 lg:w-28 lg:h-36 object-cover rounded border border-gray-300 shadow-sm flex-shrink-0"
                   />
 
-                  <div className="space-y-1">
+                  <div className="space-y-1 min-w-0 flex-1">
 
-                    <span className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase block">
+                    <span className="text-[9px] sm:text-[10px] font-semibold tracking-wider text-gray-400 uppercase block truncate">
                       BOOKLEAF PUBLISHING
                     </span>
 
-                    <h3 className="font-serif font-bold text-xl text-gray-900 leading-tight">
+                    <h3 className="font-serif font-bold text-lg sm:text-xl text-gray-900 leading-tight break-words">
                       {activeBook.title}
                     </h3>
 
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 truncate">
                       {author.name}
                     </p>
 
                     <div className="pt-2 text-xs space-y-1 text-gray-600">
 
-                      <div className="font-mono text-[11px]">
+                      <div className="font-mono text-[10px] sm:text-[11px] break-all">
                         ISBN: {activeBook.isbn}
                       </div>
 
-                      <div className="flex items-center gap-1.5 text-emerald-800 font-medium">
+                      <div className="flex items-start gap-1.5 text-emerald-800 font-medium">
 
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
 
-                        <span>
+                        <span className="break-words">
                           {activeBook.status}
                         </span>
 
                       </div>
 
                     </div>
-
                   </div>
-
                 </div>
               ) : (
                 <p className="text-sm text-gray-500">
                   No books found in your account.
                 </p>
               )}
-
             </div>
 
-            <div className="mt-5 pt-3 border-t border-gray-200/80 flex items-center justify-between text-xs">
+            {/* BOTTOM ACTION */}
+
+            <div className="mt-5 pt-3 border-t border-gray-200/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs">
 
               <span className="text-gray-500 font-medium">
                 PUBLISHING STATUS
               </span>
 
-              <button className="text-gray-900 font-semibold hover:underline flex items-center gap-1">
+              <button className="text-gray-900 font-semibold hover:underline flex items-center gap-1 self-start sm:self-auto">
                 <span>Detailed Status</span>
 
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
 
             </div>
-
           </div>
 
-          {/* Active Milestone Progress & Editorial Note */}
+      
 
-          <div className="lg:col-span-7 bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-6 flex flex-col justify-between">
+          <div className="lg:col-span-7 bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 sm:p-6 flex flex-col justify-between min-w-0">
 
             <div>
 
-              <div className="flex items-center justify-between border-b border-gray-200/80 pb-3 mb-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-[#9c6a3a] pb-3 mb-4">
 
-                <div>
+                <div className="min-w-0">
 
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+                  <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
                     CURRENT MILESTONE
                   </span>
 
@@ -448,7 +398,7 @@ const AuthDashboard = () => {
 
                 </div>
 
-                <span className="bg-amber-100 text-amber-900 font-mono text-xs font-bold px-2.5 py-1 rounded border border-amber-200">
+                <span className="self-start sm:self-auto max-w-full truncate bg-[#9c6a3a] text-white font-mono text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded border border-amber-200">
                   {activeBook
                     ? activeBook.status
                     : 'No active project'}
@@ -456,55 +406,55 @@ const AuthDashboard = () => {
 
               </div>
 
-              {/* Progress Steps Overview */}
+              {/* PROGRESS STATS */}
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs mb-5">
 
-                <div className="bg-[#F2EDE4] p-2 rounded">
-                  <span className="text-[10px] text-gray-400 block font-bold">
+                <div className="bg-[#F2EDE4] p-2.5 rounded min-w-0">
+                  <span className="text-[9px] sm:text-[10px] text-gray-400 block font-bold">
                     BOOKS
                   </span>
 
-                  <span className="font-semibold text-gray-800">
+                  <span className="font-semibold text-gray-800 break-words">
                     {stats.totalBooks} Titles
                   </span>
                 </div>
 
-                <div className="bg-[#F2EDE4] p-2 rounded">
-                  <span className="text-[10px] text-gray-400 block font-bold">
+                <div className="bg-[#F2EDE4] p-2.5 rounded min-w-0">
+                  <span className="text-[9px] sm:text-[10px] text-gray-400 block font-bold">
                     COPIES SOLD
                   </span>
 
-                  <span className="font-semibold text-gray-800">
+                  <span className="font-semibold text-gray-800 break-words">
                     {stats.totalCopiesSold.toLocaleString()}
                   </span>
                 </div>
 
-                <div className="bg-[#F2EDE4] p-2 rounded border border-amber-300 bg-amber-50">
-                  <span className="text-[10px] text-amber-800 block font-bold">
+                <div className="bg-amber-50 p-2.5 rounded border border-amber-300 min-w-0">
+                  <span className="text-[9px] sm:text-[10px] text-amber-800 block font-bold">
                     ROYALTY PAID
                   </span>
 
-                  <span className="font-semibold text-amber-900">
+                  <span className="font-semibold text-amber-900 break-words">
                     ₹{stats.royaltyPaid.toLocaleString()}
                   </span>
                 </div>
 
-                <div className="bg-[#F2EDE4] p-2 rounded opacity-60">
-                  <span className="text-[10px] text-gray-400 block font-bold">
+                <div className="bg-[#F2EDE4] p-2.5 rounded opacity-60 min-w-0">
+                  <span className="text-[9px] sm:text-[10px] text-gray-400 block font-bold">
                     ROYALTY PENDING
                   </span>
 
-                  <span className="font-semibold text-gray-700">
+                  <span className="font-semibold text-gray-700 break-words">
                     ₹{stats.royaltyPending.toLocaleString()}
                   </span>
                 </div>
 
               </div>
 
-              {/* Editorial Quote Box */}
+              {/* EDITORIAL NOTE */}
 
-              <div className="bg-[#F2EDE4] p-4 rounded-md border border-gray-300/50 relative">
+              <div className="bg-[#F2EDE4] p-3 sm:p-4 rounded-md border border-gray-300/50 relative">
 
                 <div className="flex items-start gap-3">
 
@@ -512,320 +462,166 @@ const AuthDashboard = () => {
                     BL
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
 
                       <span className="font-serif font-bold text-gray-900 text-sm">
                         BookLeaf Publishing
                       </span>
 
-                      <span className="text-[10px] font-semibold text-gray-400 uppercase">
+                      <span className="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase">
                         Editorial Team
                       </span>
 
                     </div>
 
                     <p className="text-xs text-gray-700 italic mt-1 leading-relaxed">
-                      Your publishing information, book
-                      details, and royalty records are
-                      connected to your author account.
+                      Your publishing information, book details,
+                      and royalty records are connected to your
+                      author account.
                     </p>
 
-                    <div className="mt-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
+                    <div className="mt-2 text-[9px] sm:text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
                       Live account information
                     </div>
 
                   </div>
-
                 </div>
-
               </div>
-
             </div>
 
-            <div className="mt-4 pt-3 border-t border-gray-200/80 flex items-center justify-between text-xs text-gray-500">
+            {/* ROYALTY ACTION */}
 
-              <span className="truncate">
+            <div className="mt-4 pt-3 border-t border-gray-200/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-gray-500">
+
+              <span className="break-words">
                 Total royalty earned: ₹
                 {stats.totalRoyaltyEarned.toLocaleString()}
               </span>
 
-              <button className="text-gray-900 font-semibold hover:underline whitespace-nowrap flex items-center gap-1">
+              <button className="text-gray-900 font-semibold hover:underline whitespace-nowrap flex items-center gap-1 self-start sm:self-auto">
                 <span>View Royalty Details</span>
 
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
 
             </div>
-
           </div>
-
         </div>
 
-        {/* --- MY BOOKS COLLECTION --- */}
+        {/* ================================================= */}
+        {/* MY BOOKS COLLECTION */}
+        {/* ================================================= */}
 
         <div className="space-y-4">
 
-          <div className="flex items-center justify-between">
+  {/* SECTION HEADER */}
+  <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <div className="min-w-0">
+      <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+        COLOPHON & BIBLIOGRAPHY
+      </span>
 
-            <div>
+      <h2 className="text-xl sm:text-2xl font-serif font-bold text-gray-900">
+        My Books Collection
+      </h2>
+    </div>
 
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
-                COLOPHON & BIBLIOGRAPHY
-              </span>
+    <Link
+      to="/author/books"
+      className="text-xs font-semibold text-gray-800 hover:underline flex items-center gap-1 self-start sm:self-auto"
+    >
+      <span>View All Books</span>
+      <ChevronRight className="w-4 h-4" />
+    </Link>
+  </div>
 
-              <h2 className="text-2xl font-serif font-bold text-gray-900">
-                My Books Collection
-              </h2>
+  {/* BOOK GRID */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 
-            </div>
+    {books.map((book, index) => (
+      <div
+        key={book.bookId}
+        className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg flex flex-col justify-between hover:shadow-sm transition min-w-0 overflow-hidden"
+      >
 
-            <Link
-              to="/author/books"
-              className="text-xs font-semibold text-gray-800 hover:underline flex items-center gap-1"
-            >
-              <span>View All Books</span>
+        {/* COVER */}
+        <div className="relative aspect-[3/4] overflow-hidden">
 
-              <ChevronRight className="w-4 h-4" />
-            </Link>
+          <img
+            src={getBookImage(book, index)}
+            alt={book.title}
+            className="w-full h-full object-cover"
+          />
 
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-            {books.map((book, index) => (
-
-              <div
-                key={book.bookId}
-                className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-4 flex flex-col justify-between hover:shadow-sm transition"
-              >
-
-                <div>
-
-                  <div className="relative aspect-[3/4] rounded overflow-hidden mb-3 bg-gray-200 border border-gray-300/60">
-
-                    <img
-                      src={getBookImage(
-                        book,
-                        index
-                      )}
-                      alt={book.title}
-                      className="w-full h-full object-cover"
-                    />
-
-                    <span
-                      className={`absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-bold border ${getStatusStyle(
-                        book.status
-                      )}`}
-                    >
-                      {book.status}
-                    </span>
-
-                  </div>
-
-                  <h3 className="font-serif font-bold text-base text-gray-900 truncate">
-                    {book.title}
-                  </h3>
-
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mt-0.5">
-                    {book.genre} • {book.isbn}
-                  </p>
-
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-gray-200/80 flex items-center justify-between text-xs">
-
-                  <div>
-
-                    <span className="text-[9px] text-gray-400 font-semibold block">
-                      CIRCULATION
-                    </span>
-
-                    <span className="font-semibold text-gray-800 text-[11px]">
-                      {book.totalCopiesSold.toLocaleString()} COPIES
-                    </span>
-
-                  </div>
-
-                  <div className="text-right">
-
-                    <span className="text-[9px] text-gray-400 font-semibold block">
-                      MSRP
-                    </span>
-
-                    <span className="font-serif font-bold text-gray-900">
-                      {book.mrp !== null
-                        ? `₹${book.mrp}`
-                        : '—'}
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            ))}
-
-          </div>
+          <span
+            className={`absolute top-2 left-2 right-2 sm:right-auto max-w-[calc(100%-16px)] truncate px-2 py-1 rounded text-[8px] sm:text-[9px] font-bold border ${getStatusStyle(
+              book.status
+            )}`}
+          >
+            {book.status}
+          </span>
 
         </div>
 
-        {/* --- BOTTOM SECTION: SUPPORT TICKETS & HELP CARD --- */}
+        {/* CONTENT WITH PADDING */}
+        <div className="p-3.5 sm:p-4">
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* BOOK TITLE */}
+          <h3 className="font-serif font-bold text-base text-gray-900 truncate">
+            {book.title}
+          </h3>
 
-          {/* Recent Support Activity */}
+          <p className="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase tracking-wider mt-0.5 truncate">
+            {book.genre} • {book.isbn}
+          </p>
 
-          <div className="lg:col-span-8 bg-[#F8F5EE] border border-gray-200/80 rounded-lg p-6">
+          {/* BOOK DETAILS */}
+          <div className="mt-4 pt-3 border-t border-gray-200/80 flex items-center justify-between gap-3 text-xs">
 
-            <div className="flex items-center justify-between border-b border-gray-200/80 pb-4 mb-4">
-
-              <div>
-
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
-                  AUTHOR SUPPORT DESK
-                </span>
-
-                <h3 className="text-lg font-serif font-bold text-gray-900">
-                  Recent Support Activity
-                </h3>
-
-              </div>
-
-              <button className="text-xs font-semibold text-gray-700 hover:underline">
-                View All Tickets
-              </button>
-
-            </div>
-
-            {/* Tickets are not connected yet */}
-            <div className="bg-[#F2EDE4] p-5 rounded border border-gray-300/40">
-
-              <div className="flex items-center gap-3">
-
-                <div className="p-2 bg-white rounded border border-gray-200 text-gray-700">
-                  <FileText className="w-4 h-4" />
-                </div>
-
-                <div>
-
-                  <h4 className="font-semibold text-xs text-gray-900">
-                    No support activity available yet
-                  </h4>
-
-                  <p className="text-[11px] text-gray-500 mt-1">
-                    Your support tickets will appear here once
-                    the ticket system is connected to the backend.
-                  </p>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-gray-200/80 flex items-center justify-between text-xs text-gray-500">
-
-              <span>
-                Support tickets
+            <div className="min-w-0">
+              <span className="text-[8px] sm:text-[9px] text-gray-400 font-semibold block">
+                CIRCULATION
               </span>
 
-              <Link
-                to="/author/submit-query"
-                className="text-gray-900 font-semibold hover:underline flex items-center gap-1"
-              >
-                <Plus className="w-3.5 h-3.5" />
-
-                <span>New Ticket</span>
-              </Link>
-
+              <span className="font-semibold text-gray-800 text-[10px] sm:text-[11px] truncate block">
+                {book.totalCopiesSold.toLocaleString()} COPIES
+              </span>
             </div>
 
-          </div>
-
-          {/* Need Help CTA Banner */}
-
-          <div className="lg:col-span-4 bg-[#1C1A17] text-white rounded-lg p-6 flex flex-col justify-between h-full min-h-[300px]">
-
-            <div>
-
-              <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center text-amber-400 mb-4">
-
-                <HelpCircle className="w-5 h-5" />
-
-              </div>
-
-              <span className="text-[10px] font-bold tracking-wider text-amber-400 uppercase block">
-                EDITORIAL CONCIERGE
+            <div className="text-right flex-shrink-0">
+              <span className="text-[8px] sm:text-[9px] text-gray-400 font-semibold block">
+                MSRP
               </span>
 
-              <h3 className="text-xl font-serif font-bold text-white mt-1">
-                Need Help with Your Publication?
-              </h3>
-
-              <p className="text-xs text-gray-400 mt-2 leading-relaxed">
-                Have questions regarding ISBN assignment,
-                typesetting timelines, distribution queries,
-                or ordering author copies?
-              </p>
-
-              <ul className="mt-4 space-y-2 text-xs text-gray-300">
-
-                <li className="flex items-center gap-2">
-
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-
-                  <span>
-                    Direct access to lead typesetters
-                  </span>
-
-                </li>
-
-                <li className="flex items-center gap-2">
-
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-
-                  <span>
-                    Royalty statement audit assistance
-                  </span>
-
-                </li>
-
-                <li className="flex items-center gap-2">
-
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-
-                  <span>
-                    Sample proof sign-off approval
-                  </span>
-
-                </li>
-
-              </ul>
-
+              <span className="font-serif font-bold text-gray-900">
+                {book.mrp !== null ? `₹${book.mrp}` : '—'}
+              </span>
             </div>
-
-            <Link
-              to="/author/submit-query"
-              className="mt-6 w-full py-2.5 bg-[#B87A4B] hover:bg-[#A36A3F] text-white text-xs font-semibold rounded transition flex items-center justify-center gap-2 shadow-sm"
-            >
-
-              <MessageSquare className="w-3.5 h-3.5" />
-
-              <span>
-                Submit a Support Query
-              </span>
-
-            </Link>
 
           </div>
 
         </div>
 
       </div>
+    ))}
 
+  </div>
+
+  {/* EMPTY STATE */}
+  {books.length === 0 && (
+    <div className="bg-[#F8F5EE] border border-gray-200 rounded-lg p-8 text-center">
+      <BookOpen className="w-8 h-8 mx-auto text-gray-400 mb-3" />
+
+      <p className="text-sm text-gray-500">
+        No books found in your account.
+      </p>
+    </div>
+  )}
+
+</div>
+      </div>
     </div>
   );
 };

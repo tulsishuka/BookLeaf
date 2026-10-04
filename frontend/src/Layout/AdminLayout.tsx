@@ -1,95 +1,123 @@
 
 
+
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Inbox,
- 
   LogOut,
-  Feather,
 } from 'lucide-react';
+
+interface NavigationItem {
+  name: string;
+  shortName: string;
+  path: string;
+  icon: typeof LayoutDashboard;
+  badge?: string | null;
+  badgeColor?: string;
+}
 
 const AdminLayout = () => {
   const navigate = useNavigate();
 
   // ================= LOGOUT =================
+
   const handleLogout = () => {
-    // Remove authentication data
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 
-    // Go back to login page
     navigate('/login', { replace: true });
   };
 
-  const navigationItems = [
+  // ================= NAVIGATION =================
+
+  const navigationItems: NavigationItem[] = [
     {
       name: 'Overview',
+      shortName: 'Overview',
       path: '/admin/dashboard',
       icon: LayoutDashboard,
       badge: null,
     },
     {
       name: 'Ticket Queue',
+      shortName: 'Tickets',
       path: '/admin/tickets',
       icon: Inbox,
       badge: '48',
     },
-    
-   
-   
   ];
 
   return (
-    <div className="min-h-screen flex bg-[#FDFBF7] text-gray-800 font-sans">
+    <div className="min-h-screen w-full flex bg-[#FDFBF7] text-gray-800 font-sans overflow-x-hidden">
 
-      {/* ================= LEFT SIDEBAR ================= */}
-      <aside className="w-64 bg-[#F8F5EE] border-r border-gray-200/80 flex flex-col justify-between flex-shrink-0 min-h-screen sticky top-0 h-screen select-none">
+      {/* ================================================= */}
+      {/* DESKTOP / TABLET SIDEBAR */}
+      {/* ================================================= */}
 
-        {/* ================= TOP SECTION ================= */}
-        <div className="p-5 space-y-6 overflow-y-auto">
+      <aside
+        className="
+          hidden
+          md:flex
+          fixed
+          left-0
+          top-0
+          z-40
+          w-56
+          lg:w-64
+          h-screen
+          bg-[#F8F5EE]
+          border-r
+          border-gray-200/80
+          flex-col
+          justify-between
+          flex-shrink-0
+          select-none
+        "
+      >
 
-          {/* LOGO & BRAND HEADER */}
+        {/* ================================================= */}
+        {/* TOP SECTION */}
+        {/* ================================================= */}
+
+        <div className="p-4 lg:p-5 space-y-5 lg:space-y-6 overflow-y-auto">
+
+          {/* LOGO & BRAND */}
+
           <div className="flex items-center justify-between pb-4 border-b border-gray-200/80">
 
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 min-w-0">
 
-              <div className="w-9 h-9 rounded bg-amber-900 text-amber-100 flex items-center justify-center font-serif font-bold shadow-2xs">
-                <Feather className="w-5 h-5 text-amber-200" />
-              </div>
+            
 
-              <div>
+              <div className="min-w-0">
+
                 <h1 className="font-serif font-bold text-lg text-gray-900 leading-tight">
-                  BookLeaf
+                 ADMIN PORTAL
                 </h1>
 
-                <span className="text-[10px] font-mono tracking-wider text-gray-500 uppercase block">
-                  ADMIN PORTAL
-                </span>
+
               </div>
 
             </div>
 
           </div>
 
+          {/* ================================================= */}
           {/* OPERATIONS CONSOLE */}
+          {/* ================================================= */}
+
           <div>
 
-            <span className="text-[10px] font-mono uppercase tracking-widest text-amber-900/80 font-bold flex items-center gap-1">
-
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-800 inline-block" />
-
-              OPERATIONS CONSOLE
-
-            </span>
-
-            <span className="text-[10px] font-bold tracking-widest text-gray-400 block mt-3 uppercase">
-              ADMINISTRATION
-            </span>
+          
+              
 
           </div>
 
-          {/* ================= NAVIGATION MENU ================= */}
+          {/* ================================================= */}
+          {/* NAVIGATION */}
+          {/* ================================================= */}
+
           <nav className="space-y-1">
 
             {navigationItems.map((item) => {
@@ -100,30 +128,58 @@ const AdminLayout = () => {
                   key={item.name}
                   to={item.path}
                   className={({ isActive }) =>
-                    `flex items-center justify-between px-3 py-2.5 rounded transition text-xs font-semibold ${
+                    `
+                    flex
+                    items-center
+                    justify-between
+                    gap-2
+                    px-3
+                    lg:px-3
+                    py-2.5
+                    rounded
+                    transition
+                    text-[11px]
+                    lg:text-xs
+                    font-semibold
+                    ${
                       isActive
-                        ? 'bg-black text-white shadow-2xs'
+                        ? 'bg-[#9c6a3a] text-white shadow-sm'
                         : 'text-gray-700 hover:bg-[#F2EDE4] hover:text-gray-900'
-                    }`
+                    }
+                    `
                   }
                 >
 
-                  {/* Icon + Name */}
-                  <div className="flex items-center gap-3">
+                  {/* ICON + NAME */}
+
+                  <div className="flex items-center gap-3 min-w-0">
 
                     <Icon className="w-4 h-4 flex-shrink-0" />
 
-                    <span>{item.name}</span>
+                    <span className="truncate">
+                      {item.name}
+                    </span>
 
                   </div>
 
-                  {/* Badge */}
+                  {/* BADGE */}
+
                   {item.badge && (
                     <span
-                      className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                        item.badgeColor ||
-                        'bg-gray-200 text-gray-700'
-                      }`}
+                      className={`
+                        flex-shrink-0
+                        text-[9px]
+                        lg:text-[10px]
+                        font-mono
+                        font-bold
+                        px-1.5
+                        py-0.5
+                        rounded
+                        ${
+                          item.badgeColor ||
+                          'bg-gray-200 text-gray-700'
+                        }
+                      `}
                     >
                       {item.badge}
                     </span>
@@ -137,39 +193,47 @@ const AdminLayout = () => {
 
         </div>
 
-        {/* ================= BOTTOM SECTION ================= */}
-        <div className="p-4 bg-[#F2EDE4]/60 border-t border-gray-200/80 space-y-3">
+        {/* ================================================= */}
+        {/* BOTTOM ADMIN SECTION */}
+        {/* ================================================= */}
 
-          {/* ADMIN PROFILE */}
-          <div className="flex items-center gap-3">
+        <div
+          className="
+            p-3
+            lg:p-4
+            bg-[#F2EDE4]/60
+            border-t
+            border-gray-200/80
+            space-y-3
+          "
+        >
 
-            <div className="w-9 h-9 rounded bg-black text-white font-serif font-bold text-xs flex items-center justify-center flex-shrink-0">
-              TS
-            </div>
-
-            <div className="overflow-hidden">
-
-              <h4 className="font-serif font-bold text-xs text-gray-900 truncate">
-                Tulasi Sharma
-              </h4>
-
-              <span className="text-[10px] text-gray-500 block truncate">
-                Operations Admin
-              </span>
-
-              <span className="text-[9px] font-mono text-gray-400 truncate block">
-                admin@bookleaf.example
-              </span>
-
-            </div>
-
-          </div>
+          
 
           {/* LOGOUT */}
+
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full py-1.5 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 text-xs font-semibold rounded transition flex items-center justify-center gap-1.5 shadow-2xs"
+            className="
+              w-full
+              py-2
+              bg-white
+              border
+              border-gray-300
+              hover:bg-gray-100
+              text-gray-700
+              text-[10px]
+              lg:text-xs
+              font-semibold
+              rounded
+              transition
+              flex
+              items-center
+              justify-center
+              gap-1.5
+              shadow-sm
+            "
           >
             <LogOut className="w-3.5 h-3.5 text-gray-500" />
 
@@ -180,11 +244,187 @@ const AdminLayout = () => {
 
       </aside>
 
-      {/* ================= RIGHT MAIN CONTENT ================= */}
-      <main className="flex-1 min-w-0 overflow-y-auto">
+      {/* ================================================= */}
+      {/* MOBILE BOTTOM NAVIGATION */}
+      {/* ================================================= */}
 
+      <nav
+        className="
+          md:hidden
+          fixed
+          bottom-0
+          left-0
+          right-0
+          z-50
+          bg-[#F8F5EE]
+          border-t
+          border-gray-200
+          shadow-[0_-4px_20px_rgba(0,0,0,0.07)]
+          px-2
+          pt-2
+          pb-[calc(0.5rem+env(safe-area-inset-bottom))]
+        "
+      >
+
+        <div className="grid grid-cols-3 gap-1">
+
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                className={({ isActive }) =>
+                  `
+                  relative
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  gap-1
+                  py-1.5
+                  rounded-xl
+                  transition-all
+                  duration-200
+                  ${
+                    isActive
+                      ? 'text-black'
+                      : 'text-gray-500'
+                  }
+                  `
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    {/* ICON */}
+
+                    <div
+                      className={`
+                        relative
+                        w-9
+                        h-7
+                        rounded-lg
+                        flex
+                        items-center
+                        justify-center
+                        ${
+                          isActive
+                            ? 'bg-black text-white'
+                            : 'bg-transparent'
+                        }
+                      `}
+                    >
+                      <Icon className="w-4 h-4" />
+
+                      {/* MOBILE BADGE */}
+
+                      {item.badge && (
+                        <span
+                          className="
+                            absolute
+                            -top-1
+                            -right-1
+                            min-w-[16px]
+                            h-4
+                            px-1
+                            rounded-full
+                            bg-amber-800
+                            text-white
+                            text-[8px]
+                            font-bold
+                            flex
+                            items-center
+                            justify-center
+                            border-2
+                            border-[#F8F5EE]
+                          "
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* LABEL */}
+
+                    <span
+                      className={`
+                        text-[9px]
+                        leading-none
+                        ${
+                          isActive
+                            ? 'font-bold text-black'
+                            : 'font-medium text-gray-500'
+                        }
+                      `}
+                    >
+                      {item.shortName}
+                    </span>
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
+
+          {/* MOBILE LOGOUT */}
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="
+              flex
+              flex-col
+              items-center
+              justify-center
+              gap-1
+              py-1.5
+              rounded-xl
+              text-gray-500
+              hover:text-gray-900
+              transition
+            "
+          >
+            <div
+              className="
+                w-9
+                h-7
+                rounded-lg
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <LogOut className="w-4 h-4" />
+            </div>
+
+            <span className="text-[9px] leading-none font-medium">
+              Logout
+            </span>
+          </button>
+
+        </div>
+
+      </nav>
+
+      {/* ================================================= */}
+      {/* MAIN CONTENT */}
+      {/* ================================================= */}
+
+      <main
+        className="
+          min-h-screen
+          w-full
+          md:ml-56
+          lg:ml-64
+          md:w-[calc(100%-14rem)]
+          lg:w-[calc(100%-16rem)]
+          overflow-x-hidden
+          overflow-y-auto
+          pb-24
+          md:pb-0
+        "
+      >
         <Outlet />
-
       </main>
 
     </div>
