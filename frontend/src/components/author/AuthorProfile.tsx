@@ -1,6 +1,5 @@
-
-
 import { useEffect, useState } from "react";
+
 import {
   CheckCircle2,
   Lock,
@@ -110,10 +109,6 @@ const AuthorProfile = () => {
 
       <div className="w-full space-y-6">
 
-        {/* =====================================================
-            HEADER
-        ===================================================== */}
-
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#D8D0C5] pb-4">
 
           <div className="text-xs text-gray-500 flex items-center gap-2">
@@ -137,11 +132,6 @@ const AuthorProfile = () => {
           </div>
 
         </div>
-
-        {/* =====================================================
-            PAGE TITLE
-        ===================================================== */}
-
         <div>
 
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#F2EDE4] border border-[#CFC7BB] text-[10px] font-semibold text-[#9c6a3a] uppercase tracking-wider mb-2">
@@ -164,21 +154,9 @@ const AuthorProfile = () => {
           </p>
 
         </div>
-
-        {/* =====================================================
-            MAIN CONTENT - FULL WIDTH
-        ===================================================== */}
-
         <div className="w-full space-y-8">
 
-          {/* ===================================================
-              PROFILE
-          =================================================== */}
-
           <div className="w-full bg-[#F8F5EE] border border-[#CFC7BB] rounded-lg p-5 sm:p-6 lg:p-8 space-y-6">
-
-            {/* CARD HEADER */}
-
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#D8D0C5] pb-4">
 
               <div className="flex items-center gap-2">
@@ -196,9 +174,6 @@ const AuthorProfile = () => {
               </span>
 
             </div>
-
-            {/* AUTHOR SUMMARY */}
-
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 bg-[#F2EDE4] p-4 sm:p-5 rounded-md border border-[#CFC7BB]">
 
               <div className="w-20 h-20 rounded-md bg-[#E8DED0] flex items-center justify-center text-2xl font-serif text-[#6B4F35] border border-[#CFC7BB] flex-shrink-0">
@@ -230,13 +205,7 @@ const AuthorProfile = () => {
               </div>
 
             </div>
-
-            {/* FORM */}
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-              {/* NAME */}
-
               <div className="space-y-1.5">
 
                 <label className="text-[11px] font-bold uppercase tracking-wider text-[#9c6a3a] block">
@@ -253,9 +222,6 @@ const AuthorProfile = () => {
                 />
 
               </div>
-
-              {/* EMAIL */}
-
               <div className="space-y-1.5">
 
                 <div className="flex items-center justify-between gap-2">
@@ -279,9 +245,6 @@ const AuthorProfile = () => {
                 />
 
               </div>
-
-              {/* AUTHOR ID */}
-
               <div className="space-y-1.5">
 
                 <label className="text-[11px] font-bold uppercase tracking-wider text-[#9c6a3a] block">
@@ -296,9 +259,6 @@ const AuthorProfile = () => {
                 />
 
               </div>
-
-              {/* CITY */}
-
               <div className="space-y-1.5">
 
                 <label className="text-[11px] font-bold uppercase tracking-wider text-[#9c6a3a] block">
@@ -313,8 +273,6 @@ const AuthorProfile = () => {
                 />
 
               </div>
-
-              {/* PEN NAME */}
 
               <div className="space-y-1.5 sm:col-span-2 lg:col-span-4">
 
@@ -334,9 +292,6 @@ const AuthorProfile = () => {
               </div>
 
             </div>
-
-            {/* BIO */}
-
             <div className="space-y-1.5">
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
@@ -362,9 +317,6 @@ const AuthorProfile = () => {
               />
 
             </div>
-
-            {/* SAVE */}
-
             <div className="flex justify-end pt-4 border-t border-[#D8D0C5]">
 
               <button
@@ -385,14 +337,7 @@ const AuthorProfile = () => {
 
           </div>
 
-          {/* ===================================================
-              BANKING
-          =================================================== */}
-
           <div className="w-full bg-[#F8F5EE] border border-[#CFC7BB] rounded-lg p-5 sm:p-6 lg:p-8 space-y-5">
-
-            {/* HEADER */}
-
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#D8D0C5] pb-4">
 
               <div className="flex items-center gap-2">
@@ -415,8 +360,6 @@ const AuthorProfile = () => {
               DIRECT INSTITUTIONAL AUTOMATED CLEARING
             </p>
 
-            {/* BANKING PANEL */}
-
             <div className="bg-[#F2EDE4] rounded-md p-4 sm:p-5 border border-[#CFC7BB] space-y-5">
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#D8D0C5] pb-3">
@@ -434,11 +377,7 @@ const AuthorProfile = () => {
                 </span>
 
               </div>
-
-              {/* BANK DETAILS */}
-
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 text-xs">
-
                 <div>
 
                   <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
@@ -506,9 +445,6 @@ const AuthorProfile = () => {
                 </div>
 
               </div>
-
-              {/* PAN */}
-
               <div className="bg-[#FDFBF7] p-3.5 sm:p-4 rounded border border-[#CFC7BB] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
                 <div className="flex items-center gap-2">
@@ -536,9 +472,6 @@ const AuthorProfile = () => {
               </div>
 
             </div>
-
-            {/* BANK FOOTER */}
-
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pt-4 border-t border-[#D8D0C5]">
 
               <p className="text-[11px] text-gray-500 max-w-2xl leading-relaxed">
