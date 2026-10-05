@@ -268,8 +268,6 @@ const MyBook = () => {
     <div className="min-h-screen bg-[#FDFBF7] p-6 lg:p-10 text-gray-800 font-sans">
       <div className="max-w-7xl mx-auto space-y-8">
 
-        {/* PAGE HEADER */}
-
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200/80 pb-6">
 
           <div>
@@ -311,8 +309,6 @@ const MyBook = () => {
 
           </div>
         </div>
-
-        {/* STATS CARDS */}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -391,12 +387,7 @@ const MyBook = () => {
 
         </div>
 
-        {/* FILTER & SEARCH BAR */}
-
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2">
-
-          {/* SEARCH */}
-
           <div className="relative flex-1 max-w-md">
 
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -426,8 +417,6 @@ const MyBook = () => {
             />
 
           </div>
-
-          {/* FILTERS */}
 
           <div className="flex items-center gap-2 flex-wrap">
 
@@ -467,15 +456,8 @@ const MyBook = () => {
               </button>
 
             ))}
-
-          
-
-           
-
           </div>
         </div>
-
-        {/* BOOKS */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -663,9 +645,6 @@ const MyBook = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* BOOK FOOTER */}
-
                 <div className="mt-5 pt-3 border-t border-gray-200/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
                   <div className="flex items-center gap-1.5 text-xs text-gray-500 min-w-0">
