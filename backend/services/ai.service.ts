@@ -60,25 +60,14 @@ Your job is to analyze the ticket and return:
 2. The correct priority
 3. A professional draft response for the admin to review
 
---------------------------------
-ALLOWED CATEGORIES
---------------------------------
-
 ${CATEGORIES.join("\n")}
 
 You MUST select exactly one of these categories.
-
---------------------------------
-ALLOWED PRIORITIES
---------------------------------
 
 ${PRIORITIES.join("\n")}
 
 You MUST select exactly one of these priorities.
 
---------------------------------
-AUTHOR INFORMATION
---------------------------------
 
 Author Name:
 ${authorName}
@@ -86,9 +75,6 @@ ${authorName}
 Book:
 ${bookTitle || "General / Account Level"}
 
---------------------------------
-TICKET
---------------------------------
 
 Subject:
 ${subject}
@@ -96,9 +82,6 @@ ${subject}
 Description:
 ${description}
 
---------------------------------
-RULES
---------------------------------
 
 1. Choose exactly ONE category from the allowed categories.
 
@@ -129,10 +112,6 @@ RULES
 12. Do not make unsupported claims about the publishing company.
 
 13. Keep the draft response between 2 and 5 sentences.
-
---------------------------------
-RESPONSE FORMAT
---------------------------------
 
 Return JSON only.
 
@@ -291,41 +270,6 @@ Return JSON only.
   );
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// --------------------------------------------------
-// Generate AI Draft From Ticket Conversation
-// --------------------------------------------------
-
 export interface ConversationMessage {
   senderRole: "author" | "admin";
   message: string;
@@ -367,31 +311,15 @@ The author may have replied after receiving an earlier admin response.
 You MUST focus primarily on the author's MOST RECENT message,
 while using the previous conversation for context.
 
---------------------------------
-AUTHOR INFORMATION
---------------------------------
-
 Author Name:
 ${authorName}
 
 Book:
 ${bookTitle || "General / Account Level"}
 
---------------------------------
-TICKET SUBJECT
---------------------------------
-
 ${subject}
 
---------------------------------
-COMPLETE CONVERSATION
---------------------------------
-
 ${conversation}
-
---------------------------------
-YOUR TASK
---------------------------------
 
 Generate ONE professional draft response that the admin can
 review and send to the author.
@@ -430,9 +358,6 @@ The draft MUST:
 13. The response is a DRAFT for the admin.
     The admin will review and edit it before sending.
 
---------------------------------
-OUTPUT
---------------------------------
 
 Return JSON only.
 
