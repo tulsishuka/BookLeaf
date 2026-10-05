@@ -24,11 +24,6 @@ import {
 
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:3000";
-
-// --------------------------------------------------
-// TYPES
-// --------------------------------------------------
-
 type TicketStatus =
   | "Open"
   | "In Progress"
@@ -90,57 +85,27 @@ interface ApiResponse {
   aiDraftResponse?: string | null;
 }
 
-// --------------------------------------------------
-// COMPONENT
-// --------------------------------------------------
-
 const TicketDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
-  // ------------------------------------------------
-  // STATE
-  // ------------------------------------------------
-
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-
   const [response, setResponseState] = useState("");
   const [internalNote, setInternalNote] = useState("");
-
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [addingNote, setAddingNote] = useState(false);
 
   const [error, setError] = useState("");
 
-  // ------------------------------------------------
-  // REFS
-  // ------------------------------------------------
-
-  /**
-   * These refs are important because ticket polling happens
-   * every few seconds.
-   *
-   * Without refs, polling can overwrite an admin's manually
-   * edited AI response because of stale React state.
-   */
   const responseRef = useRef("");
 
   const loadedAIDraftRef = useRef("");
-
-  // ------------------------------------------------
-  // RESPONSE HANDLER
-  // ------------------------------------------------
 
   const updateResponse = (value: string) => {
     responseRef.current = value;
     setResponseState(value);
   };
-
-  // ------------------------------------------------
-  // GET BOOK TITLE
-  // ------------------------------------------------
 
   const getBookTitle = () => {
     if (!ticket?.bookId) {
@@ -153,10 +118,6 @@ const TicketDetail = () => {
 
     return ticket.bookId.title || "Book";
   };
-
-  // ------------------------------------------------
-  // FETCH TICKET
-  // ------------------------------------------------
 
   const fetchTicket = useCallback(
     async (showLoader = false) => {
@@ -201,40 +162,8 @@ const TicketDetail = () => {
         setTicket(incomingTicket);
         setMessages(incomingMessages);
 
-        // --------------------------------------------
-        // HANDLE NEW AI DRAFT
-        // --------------------------------------------
-
         const incomingDraft =
           incomingTicket?.aiDraftResponse || "";
-
-        /**
-         * Update the textarea when:
-         *
-         * 1. It is empty
-         *
-         * OR
-         *
-         * 2. The admin has not manually changed the
-         *    previously loaded AI draft.
-         *
-         * This means:
-         *
-         * Old AI draft
-         *       ↓
-         * Admin edits it
-         *       ↓
-         * Polling happens
-         *       ↓
-         * Admin edit stays
-         *
-         * But if author replies and backend generates
-         * a completely new AI draft:
-         *
-         * New AI draft
-         *       ↓
-         * Textarea updates automatically
-         */
 
         if (
           !responseRef.current.trim() ||
@@ -265,22 +194,11 @@ const TicketDetail = () => {
     [id, navigate]
   );
 
-  // ------------------------------------------------
-  // INITIAL FETCH + POLLING
-  // ------------------------------------------------
-
   useEffect(() => {
     if (!id) return;
 
     fetchTicket(true);
 
-    /**
-     * Poll every 5 seconds.
-     *
-     * This allows the admin dashboard to automatically
-     * detect when the author has replied and the backend
-     * has generated a new AI draft.
-     */
     const interval = window.setInterval(() => {
       fetchTicket(false);
     }, 5000);
@@ -289,10 +207,6 @@ const TicketDetail = () => {
       window.clearInterval(interval);
     };
   }, [id, fetchTicket]);
-
-  // ------------------------------------------------
-  // SEND ADMIN RESPONSE
-  // ------------------------------------------------
 
   const sendResponse = async () => {
     if (!id || !response.trim()) return;
@@ -331,21 +245,12 @@ const TicketDetail = () => {
         );
       }
 
-      // --------------------------------------------
-      // IMPORTANT:
-      // Backend returns the message as `data`
-      // --------------------------------------------
-
       if (data.data) {
         setMessages((prev) => [
           ...prev,
           data.data as Message,
         ]);
       }
-
-      // --------------------------------------------
-      // UPDATE TICKET
-      // --------------------------------------------
 
       if (data.ticket) {
         setTicket(data.ticket);
@@ -363,18 +268,9 @@ const TicketDetail = () => {
         );
       }
 
-      // --------------------------------------------
-      // CLEAR RESPONSE
-      // --------------------------------------------
-
       responseRef.current = "";
       setResponseState("");
 
-      /**
-       * Fetch fresh data immediately.
-       * This makes sure the conversation and ticket
-       * state exactly match the backend.
-       */
       await fetchTicket(false);
     } catch (err) {
       console.error(
@@ -391,10 +287,6 @@ const TicketDetail = () => {
       setSending(false);
     }
   };
-
-  // ------------------------------------------------
-  // ADD INTERNAL NOTE
-  // ------------------------------------------------
 
   const addInternalNote = async () => {
     if (!id || !internalNote.trim()) return;
@@ -432,8 +324,6 @@ const TicketDetail = () => {
           data.message || "Failed to add internal note"
         );
       }
-
-      // Backend returns created message as data
       if (data.data) {
         setMessages((prev) => [
           ...prev,
@@ -460,10 +350,6 @@ const TicketDetail = () => {
     }
   };
 
-  // ------------------------------------------------
-  // STATUS COLOR
-  // ------------------------------------------------
-
   const getStatusClasses = (
     status: TicketStatus
   ) => {
@@ -484,10 +370,6 @@ const TicketDetail = () => {
         return "bg-gray-100 text-gray-700";
     }
   };
-
-  // ------------------------------------------------
-  // PRIORITY COLOR
-  // ------------------------------------------------
 
   const getPriorityClasses = (
     priority: TicketPriority
@@ -510,10 +392,6 @@ const TicketDetail = () => {
     }
   };
 
-  // ------------------------------------------------
-  // FORMAT DATE
-  // ------------------------------------------------
-
   const formatDate = (date?: string) => {
     if (!date) return "-";
 
@@ -525,10 +403,6 @@ const TicketDetail = () => {
       minute: "2-digit",
     });
   };
-
-  // ------------------------------------------------
-  // LOADING
-  // ------------------------------------------------
 
   if (loading) {
     return (
@@ -546,10 +420,6 @@ const TicketDetail = () => {
       </div>
     );
   }
-
-  // ------------------------------------------------
-  // ERROR
-  // ------------------------------------------------
 
   if (error && !ticket) {
     return (
@@ -586,10 +456,6 @@ const TicketDetail = () => {
     );
   }
 
-  // ------------------------------------------------
-  // NO TICKET
-  // ------------------------------------------------
-
   if (!ticket) {
     return (
       <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
@@ -609,16 +475,8 @@ const TicketDetail = () => {
     );
   }
 
-  // ------------------------------------------------
-  // RENDER
-  // ------------------------------------------------
-
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#2B241E]">
-      {/* -------------------------------------------- */}
-      {/* HEADER */}
-      {/* -------------------------------------------- */}
-
       <div className="border-b border-[#D8CFC4] bg-[#FDFBF7]">
         <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -671,22 +529,10 @@ const TicketDetail = () => {
           </div>
         </div>
       </div>
-
-      {/* -------------------------------------------- */}
-      {/* MAIN */}
-      {/* -------------------------------------------- */}
-
       <main className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6">
-          {/* ======================================== */}
-          {/* LEFT */}
-          {/* ======================================== */}
-
+    
           <div className="space-y-6">
-            {/* -------------------------------------- */}
-            {/* TICKET SUMMARY */}
-            {/* -------------------------------------- */}
-
             <section className="rounded-2xl border border-[#D8CFC4] bg-white overflow-hidden">
               <div className="px-5 sm:px-6 py-5 border-b border-[#E8E1D9]">
                 <div className="flex items-center gap-2">
@@ -775,10 +621,6 @@ const TicketDetail = () => {
                 </div>
               </div>
             </section>
-
-            {/* -------------------------------------- */}
-            {/* CONVERSATION */}
-            {/* -------------------------------------- */}
 
             <section className="rounded-2xl border border-[#D8CFC4] bg-white overflow-hidden">
               <div className="px-5 sm:px-6 py-5 border-b border-[#E8E1D9] flex items-center justify-between">
@@ -908,11 +750,6 @@ const TicketDetail = () => {
                 )}
               </div>
             </section>
-
-            {/* -------------------------------------- */}
-            {/* AI RESPONSE */}
-            {/* -------------------------------------- */}
-
             <section className="rounded-2xl border border-[#D8CFC4] bg-white overflow-hidden">
               <div className="px-5 sm:px-6 py-5 border-b border-[#E8E1D9]">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -1031,10 +868,6 @@ const TicketDetail = () => {
               </div>
             </section>
 
-            {/* -------------------------------------- */}
-            {/* INTERNAL NOTE */}
-            {/* -------------------------------------- */}
-
             <section className="rounded-2xl border border-[#D8CFC4] bg-white overflow-hidden">
               <div className="px-5 sm:px-6 py-5 border-b border-[#E8E1D9]">
                 <div className="flex items-center gap-2">
@@ -1125,11 +958,6 @@ const TicketDetail = () => {
                   )}
               </div>
             </section>
-
-            {/* -------------------------------------- */}
-            {/* AI ANALYSIS */}
-            {/* -------------------------------------- */}
-
             <section className="rounded-2xl bg-[#9c6a3a] text-white overflow-hidden">
               <div className="p-5">
                 <div className="flex items-center gap-2">
@@ -1184,11 +1012,6 @@ const TicketDetail = () => {
                 </div>
               </div>
             </section>
-
-            {/* -------------------------------------- */}
-            {/* TICKET TIMELINE */}
-            {/* -------------------------------------- */}
-
             <section className="rounded-2xl border border-[#D8CFC4] bg-white overflow-hidden">
               <div className="px-5 py-5 border-b border-[#E8E1D9]">
                 <div className="flex items-center gap-2">
