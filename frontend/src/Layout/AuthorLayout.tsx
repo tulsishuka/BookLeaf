@@ -120,11 +120,12 @@ const AuthorLayout = () => {
 
 
           <div className="mb-8 px-2 lg:px-1">
+            <Link to="/"> 
             <div className="font-serif text-xl lg:text-2xl font-bold text-[#9c6a3a]">
                Author Portal
             </div>
 
-            
+            </Link>
           </div>
 
 
