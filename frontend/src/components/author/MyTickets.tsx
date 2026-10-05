@@ -44,10 +44,6 @@ interface Ticket {
 const API_URL =
   import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-// ============================================================
-// HELPERS
-// ============================================================
-
 const formatDate = (dateString: string) => {
   if (!dateString) return '';
 
@@ -136,9 +132,6 @@ const getPriorityClass = (
   }
 };
 
-// ============================================================
-// COMPONENT
-// ============================================================
 
 const MyTickets = () => {
   const [activeTab, setActiveTab] = useState('All');
@@ -154,10 +147,6 @@ const MyTickets = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-  // ============================================================
-  // FETCH AUTHOR TICKETS
-  // ============================================================
 
   const fetchTickets = async () => {
     try {
@@ -208,10 +197,6 @@ const MyTickets = () => {
     fetchTickets();
   }, []);
 
-  // ============================================================
-  // BOOK FILTER OPTIONS
-  // ============================================================
-
   const bookOptions = useMemo(() => {
     const books = tickets
       .map((ticket) => ticket.bookId?.title)
@@ -222,10 +207,6 @@ const MyTickets = () => {
 
     return [...new Set(books)];
   }, [tickets]);
-
-  // ============================================================
-  // FILTER + SEARCH + SORT
-  // ============================================================
 
   const filteredTickets = useMemo(() => {
     let result = [...tickets];
@@ -311,9 +292,6 @@ const MyTickets = () => {
     sortOrder,
   ]);
 
-  // ============================================================
-  // STATUS COUNTS
-  // ============================================================
 
   const filterTabs = useMemo(() => {
     return [
@@ -348,10 +326,6 @@ const MyTickets = () => {
     ];
   }, [tickets]);
 
-  // ============================================================
-  // LOADING
-  // ============================================================
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FDFBF7] px-4 py-6 sm:px-6 lg:px-10 text-gray-800 font-sans">
@@ -374,17 +348,10 @@ const MyTickets = () => {
     );
   }
 
-  // ============================================================
-  // UI
-  // ============================================================
-
   return (
     <div className="min-h-screen w-full bg-[#FDFBF7] px-4 py-6 sm:px-6 lg:px-10 text-gray-800 font-sans">
 
       <div className="w-full space-y-6">
-
-        {/* HEADER TOP */}
-
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#D8D0C5] pb-4">
 
           <div className="text-xs text-gray-500 flex items-center gap-2">
@@ -408,9 +375,6 @@ const MyTickets = () => {
           </div>
 
         </div>
-
-        {/* PAGE HEADING */}
-
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
 
           <div>
@@ -470,17 +434,9 @@ const MyTickets = () => {
 
           </div>
         )}
-
-        {/* CONTROLS BAR */}
-
         <div className="bg-[#F8F5EE] border border-[#CFC7BB] rounded-lg p-4 space-y-4">
 
-          {/* Row 1 */}
-
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-
-            {/* Search */}
-
             <div className="md:col-span-6 relative">
 
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#9c6a3a]" />
@@ -496,9 +452,6 @@ const MyTickets = () => {
               />
 
             </div>
-
-            {/* Book Filter */}
-
             <div className="md:col-span-3 relative">
 
               <select
@@ -527,9 +480,6 @@ const MyTickets = () => {
               <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-[#9c6a3a] pointer-events-none" />
 
             </div>
-
-            {/* Sort */}
-
             <div className="md:col-span-3 relative">
 
               <select
@@ -559,8 +509,6 @@ const MyTickets = () => {
             </div>
 
           </div>
-
-          {/* Row 2 */}
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-[#D8D0C5]">
 
@@ -617,9 +565,6 @@ const MyTickets = () => {
           </div>
 
         </div>
-
-        {/* TICKETS LIST */}
-
         <div className="space-y-4">
 
           {filteredTickets.length === 0 ? (
@@ -655,9 +600,6 @@ const MyTickets = () => {
                   key={ticket._id}
                   className="bg-[#F8F5EE] border border-[#CFC7BB] rounded-lg p-5 lg:p-6 transition hover:shadow-sm space-y-4 relative"
                 >
-
-                  {/* Card Header */}
-
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#D8D0C5] pb-3">
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -702,9 +644,6 @@ const MyTickets = () => {
                     ) : null}
 
                   </div>
-
-                  {/* Main Content */}
-
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
 
                     <div className="md:col-span-8 space-y-2">
@@ -718,9 +657,6 @@ const MyTickets = () => {
                       </p>
 
                     </div>
-
-                    {/* Right Side */}
-
                     <div className="md:col-span-4 flex flex-col items-start md:items-end justify-between h-full space-y-3">
 
                    
@@ -747,9 +683,6 @@ const MyTickets = () => {
                     </div>
 
                   </div>
-
-                  {/* Footer */}
-
                   <div className="pt-3 border-t border-[#D8D0C5] flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-3 text-xs text-gray-500">
 
                     <div className="flex items-center gap-2">
@@ -784,11 +717,7 @@ const MyTickets = () => {
             })
           )}
 
-        </div>
-
-       
-
-      </div>
+        </div>  </div>
 
     </div>
   );
