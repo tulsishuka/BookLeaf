@@ -174,9 +174,6 @@ const AuthorLayout = () => {
         <div>
 
           <div className="border-t border-gray-200 pt-5">
-
-            {/* USER */}
-
             <div className="flex items-center gap-3 mb-4 min-w-0">
 
               <div
@@ -245,10 +242,6 @@ const AuthorLayout = () => {
         </div>
 
       </aside>
-
-      {/* ===================================================== */}
-      {/* MOBILE BOTTOM NAVIGATION */}
-      {/* ===================================================== */}
 
       <nav
         className="
