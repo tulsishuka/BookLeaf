@@ -5,13 +5,9 @@ const Footer = () => {
     <footer className="w-full bg-[#1e1b18] text-[#c5b9ab] font-sans pt-16 pb-8 px-6 md:px-12 lg:px-20 border-t border-[#312b26]">
       <div className="max-w-7xl mx-auto">
         
-        {/* Main Grid Section */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 pb-16">
-          
-          {/* Brand Info & Mission Statement (Left Column) */}
-          <div className="md:col-span-5 lg:col-span-5 flex flex-col justify-between">
+                    <div className="md:col-span-5 lg:col-span-5 flex flex-col justify-between">
             <div>
-              {/* Brand Header */}
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 overflow-hidden flex items-center justify-center">
                   <img
@@ -25,20 +21,16 @@ const Footer = () => {
                 </span>
               </div>
 
-              {/* Description Paragraph */}
               <p className="text-xs sm:text-sm text-[#a69580] font-normal leading-relaxed max-w-md mb-6">
                 Helping authors carry their stories from the page into the
                 world with archival dignity, careful typography, and
                 steadfast stewardship.
               </p>
 
-              {/* Italic Quote */}
               <p className="text-sm font-serif italic text-[#c2a682] mb-8">
                 “Every story deserves a reader.”
               </p>
             </div>
-
-            {/* Portals Section */}
             <div>
               <h4 className="text-[11px] font-bold tracking-widest text-[#8c7457] uppercase mb-3">
                 PORTALS
@@ -68,13 +60,11 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Spacer Column */}
-          <div className="hidden lg:block lg:col-span-1"></div>
+  <div className="hidden lg:block lg:col-span-1"></div>
 
-          {/* Navigation Links Grid (Right Columns) */}
           <div className="md:col-span-7 lg:col-span-6 grid grid-cols-2 sm:grid-cols-2 gap-8 items-start">
             
-            {/* Explore Column */}
+          
             <div>
               <h4 className="text-[11px] font-bold tracking-widest text-[#8c7457] uppercase mb-4">
                 EXPLORE
@@ -103,7 +93,6 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Support Column */}
             <div>
               <h4 className="text-[11px] font-bold tracking-widest text-[#8c7457] uppercase mb-4">
                 SUPPORT
@@ -135,8 +124,6 @@ const Footer = () => {
           </div>
 
         </div>
-
-        {/* Bottom Copyright & Legal Links Bar */}
         <div className="pt-8 border-t border-[#2e2823] flex flex-col sm:flex-row items-center justify-between text-xs text-[#7d7063] gap-4">
           <p>© 2026 BookLeaf Stewardship Press. All rights reserved.</p>
 
