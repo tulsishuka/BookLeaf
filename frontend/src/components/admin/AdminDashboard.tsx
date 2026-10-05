@@ -70,7 +70,6 @@ const AdminDashboard = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  // const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchTickets = async () => {
     try {
@@ -108,7 +107,6 @@ const AdminDashboard = () => {
         : data.tickets || [];
 
       setTickets(receivedTickets);
-      // setLastUpdated(new Date());
     } catch (err) {
       console.error("ADMIN DASHBOARD ERROR:", err);
 
