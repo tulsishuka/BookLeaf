@@ -14,27 +14,12 @@ app.use(
 );
 
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
-
-/*
-|--------------------------------------------------------------------------
-| Health Check
-|--------------------------------------------------------------------------
-*/
-
 app.get("/", (_req, res) => {
   res.json({
     message: "BookLeaf API is running",
   });
 });
-
-/*
-|--------------------------------------------------------------------------
-| Routes
-|--------------------------------------------------------------------------
-*/
-
 app.use("/api/auth", authRoutes);
 app.use("/api/tickets", ticketRoutes);
 export default app;
