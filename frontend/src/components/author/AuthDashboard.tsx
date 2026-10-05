@@ -63,7 +63,6 @@ const AuthDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // ================= FETCH REAL BACKEND DATA =================
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -87,8 +86,6 @@ const AuthDashboard = () => {
     fetchDashboard();
   }, []);
 
-  // ================= LOADING =================
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FDFBF7] px-4 py-6 sm:p-6 lg:p-10 text-gray-800 font-sans">
@@ -104,8 +101,6 @@ const AuthDashboard = () => {
       </div>
     );
   }
-
-  // ================= ERROR =================
 
   if (error) {
     return (
@@ -128,13 +123,7 @@ const AuthDashboard = () => {
   if (!data) {
     return null;
   }
-
-  // ================= REAL DATA =================
-
   const { author, stats, books } = data;
-
-  // ================= TOP STATS =================
-
   const topStats = [
     {
       title: 'TITLES BOUND',
@@ -162,17 +151,12 @@ const AuthDashboard = () => {
       highlight: true,
     },
   ];
-
-  // ================= ACTIVE BOOK =================
-
   const activeBook =
     books.find(
       (book) =>
         book.status?.toLowerCase().includes('production') ||
         book.status?.toLowerCase().includes('progress')
     ) || books[0];
-
-  // ================= BOOK STATUS =================
 
   const getStatusStyle = (status: string) => {
     const normalizedStatus = status?.toLowerCase() || '';
@@ -284,14 +268,7 @@ const AuthDashboard = () => {
           })}
         </div>
 
-        {/* ================================================= */}
-        {/* ACTIVE PRODUCTION WORKBENCH */}
-        {/* ================================================= */}
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-
-          {/* ACTIVE BOOK */}
-
           <div className="lg:col-span-5 bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 sm:p-5 flex flex-col justify-between min-w-0">
 
             <div>
@@ -360,9 +337,6 @@ const AuthDashboard = () => {
                 </p>
               )}
             </div>
-
-            {/* BOTTOM ACTION */}
-
             <div className="mt-5 pt-3 border-t border-gray-200/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs">
 
               <span className="text-gray-500 font-medium">
@@ -405,8 +379,6 @@ const AuthDashboard = () => {
                 </span>
 
               </div>
-
-              {/* PROGRESS STATS */}
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs mb-5">
 
@@ -451,9 +423,6 @@ const AuthDashboard = () => {
                 </div>
 
               </div>
-
-              {/* EDITORIAL NOTE */}
-
               <div className="bg-[#F2EDE4] p-3 sm:p-4 rounded-md border border-gray-300/50 relative">
 
                 <div className="flex items-start gap-3">
@@ -490,9 +459,6 @@ const AuthDashboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* ROYALTY ACTION */}
-
             <div className="mt-4 pt-3 border-t border-gray-200/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-gray-500">
 
               <span className="break-words">
@@ -510,13 +476,7 @@ const AuthDashboard = () => {
           </div>
         </div>
 
-        {/* ================================================= */}
-        {/* MY BOOKS COLLECTION */}
-        {/* ================================================= */}
-
         <div className="space-y-4">
-
-  {/* SECTION HEADER */}
   <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
     <div className="min-w-0">
       <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
@@ -536,8 +496,6 @@ const AuthDashboard = () => {
       <ChevronRight className="w-4 h-4" />
     </Link>
   </div>
-
-  {/* BOOK GRID */}
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 
     {books.map((book, index) => (
@@ -545,8 +503,6 @@ const AuthDashboard = () => {
         key={book.bookId}
         className="bg-[#F8F5EE] border border-gray-200/80 rounded-lg flex flex-col justify-between hover:shadow-sm transition min-w-0 overflow-hidden"
       >
-
-        {/* COVER */}
         <div className="relative aspect-[3/4] overflow-hidden">
 
           <img
@@ -564,11 +520,7 @@ const AuthDashboard = () => {
           </span>
 
         </div>
-
-        {/* CONTENT WITH PADDING */}
         <div className="p-3.5 sm:p-4">
-
-          {/* BOOK TITLE */}
           <h3 className="font-serif font-bold text-base text-gray-900 truncate">
             {book.title}
           </h3>
@@ -576,8 +528,6 @@ const AuthDashboard = () => {
           <p className="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase tracking-wider mt-0.5 truncate">
             {book.genre} • {book.isbn}
           </p>
-
-          {/* BOOK DETAILS */}
           <div className="mt-4 pt-3 border-t border-gray-200/80 flex items-center justify-between gap-3 text-xs">
 
             <div className="min-w-0">
@@ -608,8 +558,6 @@ const AuthDashboard = () => {
     ))}
 
   </div>
-
-  {/* EMPTY STATE */}
   {books.length === 0 && (
     <div className="bg-[#F8F5EE] border border-gray-200 rounded-lg p-8 text-center">
       <BookOpen className="w-8 h-8 mx-auto text-gray-400 mb-3" />
