@@ -1,7 +1,7 @@
 
 
 
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Inbox,
@@ -50,10 +50,11 @@ const AdminLayout = () => {
 
             <div className="flex items-center gap-2.5 min-w-0">
      <div className="min-w-0">
+      <Link to="/">
                 <h1 className="font-serif font-bold text-lg text-gray-900 leading-tight">
                  ADMIN PORTAL
                 </h1>
-
+</Link>
 
               </div>
 
