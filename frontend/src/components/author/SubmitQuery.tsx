@@ -19,7 +19,8 @@ interface AttachedFile {
 }
 
 const API_URL =
-  import.meta.env.VITE_API_URL || 'https://bookleaf-1-backend.onrender.com/';
+  import.meta.env.VITE_API_URL ||
+  'https://bookleaf-1-backend.onrender.com';
 
 const SubmitQuery: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
