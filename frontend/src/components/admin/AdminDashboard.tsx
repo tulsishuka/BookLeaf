@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/set-state-in-effect */
 
 import { useEffect, useMemo, useState } from "react";
@@ -71,7 +70,7 @@ const AdminDashboard = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  // const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchTickets = async () => {
     try {
@@ -109,7 +108,7 @@ const AdminDashboard = () => {
         : data.tickets || [];
 
       setTickets(receivedTickets);
-      setLastUpdated(new Date());
+      // setLastUpdated(new Date());
     } catch (err) {
       console.error("ADMIN DASHBOARD ERROR:", err);
 
