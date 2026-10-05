@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  // baseURL: "http://localhost:3000/api",
+  baseURL: "https://bookleaf-1-backend.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -21,5 +22,4 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 export default api;
