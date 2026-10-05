@@ -472,8 +472,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* CRITICAL */}
-
         <div className="bg-[#FFF0F0] border border-red-200 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-red-700 uppercase tracking-wider bg-red-100 px-1.5 py-0.5 rounded">
@@ -494,8 +492,6 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-
-        {/* UNASSIGNED */}
 
         <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
@@ -519,7 +515,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* IN PROGRESS */}
+    
 
         <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
@@ -542,9 +538,6 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-
-        {/* RESOLVED */}
-
         <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
@@ -565,8 +558,6 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-
-        {/* RESPONSE */}
 
         <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
@@ -589,8 +580,6 @@ const AdminDashboard = () => {
         </div>
 
       </div>
-
-      {/* RECENT TICKETS */}
 
       <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 sm:p-6 space-y-4">
 
@@ -770,9 +759,6 @@ const AdminDashboard = () => {
 
         </div>
       </div>
-
-      {/* AI BANNER */}
-
     
 
     </div>
