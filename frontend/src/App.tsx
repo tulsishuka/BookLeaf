@@ -47,6 +47,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/about" element={<About />} />
 
   <Route element={<ProtectedRoute allowedRole="author" />}>
   <Route path="/author" element={<AuthorLayout />}>
