@@ -420,7 +420,7 @@ const TicketQueue = () => {
 
           {/* TOTAL */}
 
-          <div className="group bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
+          <div className="group bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
             <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
               Total Queries
@@ -446,7 +446,7 @@ const TicketQueue = () => {
 
           {/* OPEN */}
 
-          <div className="group bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
+          <div className="group bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
             <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
               Open
@@ -477,7 +477,7 @@ const TicketQueue = () => {
 
           {/* CRITICAL */}
 
-          <div className="group bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
+          <div className="group bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
             <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
               Critical
@@ -508,7 +508,7 @@ const TicketQueue = () => {
 
           {/* IN PROGRESS */}
 
-          <div className="group bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
+          <div className="group bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
             <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
               In Progress
@@ -543,7 +543,7 @@ const TicketQueue = () => {
         {/* SEARCH + FILTER */}
         {/* ================================================= */}
 
-        <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-4 sm:p-5 mb-7">
+        <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-4 sm:p-5 mb-7">
 
           <div className="flex flex-col lg:flex-row gap-3">
 
@@ -582,7 +582,7 @@ const TicketQueue = () => {
                       | TicketStatus
                   )
                 }
-                className="w-full lg:w-auto h-11 bg-[#FDFBF7] border border-[#D8CFC4] rounded-lg px-3 text-sm text-[#1C1C1C] outline-none focus:border-[#9C6A3A] transition cursor-pointer"
+                className="w-full lg:w-auto h-11 bg-[#FDFBF7] border border-[#9c6a3a] rounded-lg px-3 text-sm text-[#1C1C1C] outline-none focus:border-[#9C6A3A] transition cursor-pointer"
               >
 
                 <option value="All">
@@ -620,7 +620,7 @@ const TicketQueue = () => {
                     | TicketPriority
                 )
               }
-              className="w-full lg:w-auto h-11 bg-[#FDFBF7] border border-[#D8CFC4] rounded-lg px-3 text-sm text-[#1C1C1C] outline-none focus:border-[#9C6A3A] transition cursor-pointer"
+              className="w-full lg:w-auto h-11 bg-[#FDFBF7] border border-[#9c6a3a] rounded-lg px-3 text-sm text-[#1C1C1C] outline-none focus:border-[#9C6A3A] transition cursor-pointer"
             >
 
               <option value="All">
@@ -685,9 +685,9 @@ const TicketQueue = () => {
 
           {filteredTickets.length === 0 ? (
 
-            <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-12 sm:p-16 text-center">
+            <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-12 sm:p-16 text-center">
 
-              <div className="w-16 h-16 mx-auto rounded-full bg-[#F2EDE4] border border-[#D8CFC4] flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto rounded-full bg-[#F2EDE4] border border-[#9c6a3a] flex items-center justify-center">
 
                 <Inbox className="w-7 h-7 text-[#6F6A63]" />
 
@@ -715,7 +715,7 @@ const TicketQueue = () => {
                     `/admin/tickets/${ticket._id}`
                   )
                 }
-                className="w-full text-left bg-[#F8F5EE] border border-[#D8CFC4] rounded-2xl p-5 sm:p-6 hover:bg-[#FAF7F1] hover:border-[#BCA993] hover:shadow-[0_10px_30px_rgba(43,36,30,0.06)] transition-all duration-200 group"
+                className="w-full text-left bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:bg-[#FAF7F1] hover:border-[#BCA993] hover:shadow-[0_10px_30px_rgba(43,36,30,0.06)] transition-all duration-200 group"
               >
 
                 <div className="flex flex-col xl:flex-row xl:items-center gap-5 xl:gap-6">
@@ -758,7 +758,7 @@ const TicketQueue = () => {
 
                     <div className="flex flex-wrap items-center gap-2 mt-4">
 
-                      <span className="text-[10px] bg-[#F2EDE4] border border-[#E5DED4] text-[#6F6A63] px-2.5 py-1.5 rounded-md">
+                      <span className="text-[10px] bg-[#F2EDE4] border border-[#9c6a3a] text-[#6F6A63] px-2.5 py-1.5 rounded-md">
                         {ticket.category}
                       </span>
 

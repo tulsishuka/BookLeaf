@@ -1,74 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+
+
 import { Feather, BookOpen, ShieldCheck } from 'lucide-react';
 import butterflyImg from '../assets/butterfly.png';
 
-const headingWords = ['We', 'believe', 'stories', 'should'];
-
-const descriptionWords = [
-  "From",
-  "an",
-  "author’s",
-  "imagination",
-  "to",
-  "a",
-  "reader’s",
-  "hands,",
-  "every",
-  "book",
-  "has",
-  "a",
-  "sacred",
-  "journey.",
-  "BookLeaf",
-  "was",
-  "founded",
-  "on",
-  "a",
-  "simple",
-  "conviction:",
-  "that",
-  "self-publishing",
-  "should",
-  "never",
-  "mean",
-  "solitary",
-  "publishing.",
-];
-
 const Home = () => {
-  const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-
-    if (!section) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(false);
-
-          requestAnimationFrame(() => {
-            setIsVisible(true);
-          });
-        } else {
-          setIsVisible(false);
-        }
-      },
-      {
-        threshold: 0.35,
-      }
-    );
-
-    observer.observe(section);
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <section
-      ref={sectionRef}
       className="
         relative w-full
         min-h-[500px]
@@ -83,7 +20,6 @@ const Home = () => {
         text-[#2c2825]
       "
     >
-
       <img
         src={butterflyImg}
         alt=""
@@ -137,8 +73,9 @@ const Home = () => {
 
       <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center text-center">
 
+        {/* Badge */}
         <div
-          className={`
+          className="
             inline-flex items-center gap-2
             bg-[#f3ecdf]/80
             backdrop-blur-sm
@@ -152,17 +89,7 @@ const Home = () => {
             uppercase
             mb-8
             shadow-sm
-
-            transition-all
-            duration-700
-            ease-out
-
-            ${
-              isVisible
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-4'
-            }
-          `}
+          "
         >
           <span className="w-1.5 h-1.5 rounded-full bg-[#9c6a3a]" />
 
@@ -171,6 +98,7 @@ const Home = () => {
           </span>
         </div>
 
+        {/* Heading */}
         <h1
           className="
             text-4xl
@@ -183,57 +111,13 @@ const Home = () => {
             mb-6
           "
         >
-          {headingWords.map((word, index) => (
-            <span
-              key={word}
-              className={`
-                inline-block
-                mr-[0.25em]
-                transition-all
-                duration-700
-                ease-out
-
-                ${
-                  isVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-6'
-                }
-              `}
-              style={{
-                transitionDelay: isVisible
-                  ? `${500 + index * 180}ms`
-                  : '0ms',
-              }}
-            >
-              {word}
-            </span>
-          ))}
-
-          <span
-            className={`
-              inline-block
-              italic
-              font-normal
-              text-[#9c6a3a]
-
-              transition-all
-              duration-1000
-              ease-out
-
-              ${
-                isVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-8'
-              }
-            `}
-            style={{
-              transitionDelay: isVisible ? '1220ms' : '0ms',
-            }}
-          >
+          We believe stories should{' '}
+          <span className="italic font-normal text-[#9c6a3a]">
             travel.
           </span>
         </h1>
 
+        {/* Description */}
         <p
           className="
             max-w-2xl
@@ -245,36 +129,14 @@ const Home = () => {
             mb-10
           "
         >
-          {descriptionWords.map((word, index) => (
-            <span
-              key={`${word}-${index}`}
-              className={`
-                inline-block
-                mr-[0.28em]
-
-                transition-all
-                duration-500
-                ease-out
-
-                ${
-                  isVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-3'
-                }
-              `}
-              style={{
-                transitionDelay: isVisible
-                  ? `${1450 + index * 35}ms`
-                  : '0ms',
-              }}
-            >
-              {word}
-            </span>
-          ))}
+          From an author’s imagination to a reader’s hands, every book has a
+          sacred journey. BookLeaf was founded on a simple conviction: that
+          self-publishing should never mean solitary publishing.
         </p>
 
+        {/* Information pill */}
         <div
-          className={`
+          className="
             inline-flex
             flex-wrap
             items-center
@@ -295,20 +157,7 @@ const Home = () => {
             font-medium
             text-[#6e6357]
             shadow-sm
-
-            transition-all
-            duration-1000
-            ease-out
-
-            ${
-              isVisible
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-5'
-            }
-          `}
-          style={{
-            transitionDelay: isVisible ? '2700ms' : '0ms',
-          }}
+          "
         >
           <div className="flex items-center gap-1.5">
             <Feather className="w-3.5 h-3.5 text-[#9c6a3a]" />
@@ -348,11 +197,9 @@ const Home = () => {
               100% Author Sovereignty
             </span>
           </div>
-
         </div>
 
       </div>
-
     </section>
   );
 };

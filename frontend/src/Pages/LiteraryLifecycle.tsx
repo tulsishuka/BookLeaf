@@ -1,5 +1,3 @@
-
-import { useEffect, useRef, useState } from 'react';
 import {
   FileText,
   PenTool,
@@ -86,43 +84,8 @@ const descriptionWords = [
 ];
 
 const LiteraryLifecycle = () => {
-  const scrollContainerRef = useRef(null);
-  const sectionRef = useRef(null);
-
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-
-    if (!section) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(false);
-
-          requestAnimationFrame(() => {
-            setIsVisible(true);
-          });
-        } else {
-          setIsVisible(false);
-        }
-      },
-      {
-        threshold: 0.25,
-      }
-    );
-
-    observer.observe(section);
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section
-      ref={sectionRef}
-      className="relative w-full bg-[#f4efe6] text-[#2c2825] py-10 sm:py-16 lg:py-20 px-4 sm:px-8 md:px-12 lg:px-16 font-sans overflow-hidden min-h-fit"
-    >
+    <section className="relative w-full bg-[#f4efe6] text-[#2c2825] py-10 sm:py-16 lg:py-20 px-4 sm:px-8 md:px-12 lg:px-16 font-sans overflow-hidden min-h-fit">
 
       <img
         src={butterflyImg}
@@ -147,8 +110,9 @@ const LiteraryLifecycle = () => {
 
           <div className="max-w-2xl">
 
+            {/* Section Label */}
             <p
-              className={`
+              className="
                 text-[11px]
                 font-bold
                 tracking-[0.2em]
@@ -158,89 +122,41 @@ const LiteraryLifecycle = () => {
                 flex
                 items-center
                 gap-2
-
-                transition-all
-                duration-700
-                ease-out
-
-                ${
-                  isVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-4'
-                }
-              `}
+              "
             >
               <span>→0</span>
               <span>THE LITERARY LIFECYCLE</span>
             </p>
 
+            {/* Heading */}
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-medium text-[#1c1917] tracking-tight leading-tight mb-3">
-
               {headingWords.map((word, index) => (
                 <span
                   key={`${word}-${index}`}
-                  className={`
-                    inline-block
-                    mr-[0.25em]
-
-                    transition-all
-                    duration-700
-                    ease-out
-
-                    ${
-                      isVisible
-                        ? 'opacity-100 translate-y-0'
-                        : 'opacity-0 translate-y-6'
-                    }
-                  `}
-                  style={{
-                    transitionDelay: isVisible
-                      ? `${400 + index * 150}ms`
-                      : '0ms',
-                  }}
+                  className="inline-block mr-[0.25em]"
                 >
                   {word}
                 </span>
               ))}
-
             </h2>
 
+            {/* Description */}
             <p className="text-xs sm:text-base text-[#6e6357] font-normal leading-relaxed">
-
               {descriptionWords.map((word, index) => (
                 <span
                   key={`${word}-${index}`}
-                  className={`
-                    inline-block
-                    mr-[0.28em]
-
-                    transition-all
-                    duration-500
-                    ease-out
-
-                    ${
-                      isVisible
-                        ? 'opacity-100 translate-y-0'
-                        : 'opacity-0 translate-y-3'
-                    }
-                  `}
-                  style={{
-                    transitionDelay: isVisible
-                      ? `${1050 + index * 35}ms`
-                      : '0ms',
-                  }}
+                  className="inline-block mr-[0.28em]"
                 >
                   {word}
                 </span>
               ))}
-
             </p>
 
           </div>
         </div>
 
+        {/* Milestone Cards */}
         <div
-          ref={scrollContainerRef}
           className="
             flex md:grid
             grid-cols-1 md:grid-cols-2 lg:grid-cols-4
@@ -249,7 +165,7 @@ const LiteraryLifecycle = () => {
             snap-x snap-mandatory md:snap-none
             pb-6 md:pb-0
             -mx-4 px-4 sm:-mx-8 sm:px-8 md:mx-0 md:px-0
-            no-scrollbar scroll-smooth
+            no-scrollbar
           "
           style={{
             scrollbarWidth: 'none',
@@ -257,13 +173,13 @@ const LiteraryLifecycle = () => {
           }}
         >
 
-          {milestones.map((item, index) => {
+          {milestones.map((item) => {
             const IconComponent = item.icon;
 
             return (
               <div
                 key={item.number}
-                className={`
+                className="
                   snap-center
                   flex-shrink-0 md:flex-shrink
                   w-[82vw] sm:w-[320px] md:w-full
@@ -278,26 +194,12 @@ const LiteraryLifecycle = () => {
 
                   shadow-sm
                   hover:shadow-md
-
-                  transition-all
-                  duration-700
-                  ease-out
-
-                  ${
-                    isVisible
-                      ? 'opacity-100 translate-y-0'
-                      : 'opacity-0 translate-y-10'
-                  }
-                `}
-                style={{
-                  transitionDelay: isVisible
-                    ? `${1900 + index * 180}ms`
-                    : '0ms',
-                }}
+                "
               >
 
                 <div>
 
+                  {/* Number + Timeline */}
                   <div className="flex items-center justify-between mb-4">
 
                     <span className="text-2xl font-serif font-bold text-[#8c7457]">
@@ -310,27 +212,32 @@ const LiteraryLifecycle = () => {
 
                   </div>
 
+                  {/* Icon */}
                   <div className="w-9 h-9 rounded bg-[#f4efe6]/90 border border-[#ded1be] flex items-center justify-center text-[#8c7457] mb-5 shadow-sm">
                     <IconComponent className="w-4 h-4" />
                   </div>
 
+                  {/* Category */}
                   <span className="block text-[10px] font-bold tracking-[0.15em] text-[#a09383] uppercase mb-1.5">
                     {item.category}
                   </span>
 
+                  {/* Title */}
                   <h3 className="text-lg sm:text-xl font-serif font-bold text-[#1c1917] mb-2">
                     {item.title}
                   </h3>
 
+                  {/* Description */}
                   <p className="text-xs text-[#6e6357] leading-relaxed mb-5 font-normal">
                     {item.description}
                   </p>
 
                 </div>
 
+                {/* Deliverable */}
                 <div className="pt-3 border-t border-[#ded1be]/60 flex items-center gap-2 mt-auto">
 
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#8c7457] shrink-0"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#8c7457] shrink-0" />
 
                   <p className="text-[11px] text-[#4a423a]">
 

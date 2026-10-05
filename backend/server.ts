@@ -1,10 +1,7 @@
 import "dotenv/config";
-
 import mongoose from "mongoose";
 import app from "./app";
-
 const PORT = process.env.PORT || 3000;
-
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
@@ -24,7 +21,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error(
-      "❌ Failed to start server:",
+      " Failed to start server:",
       error
     );
 

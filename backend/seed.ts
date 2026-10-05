@@ -15,22 +15,15 @@ const seedDatabase = async () => {
     }
 
     await mongoose.connect(mongoUri);
-
     console.log("✅ MongoDB connected");
-
-    // Remove existing demo data
     await User.deleteMany({});
     await Book.deleteMany({});
 
     console.log("🗑️ Old users and books removed");
-
-    // Password for all demo authors
     const hashedAuthorPassword = await bcrypt.hash(
       "password123",
       10
     );
-
-    // Create authors and books
     for (const author of authors) {
       await User.create({
         authorId: author.author_id,
@@ -81,8 +74,6 @@ const seedDatabase = async () => {
         `📚 Created ${author.name} → ${books.length} books`
       );
     }
-
-    // Create admin account
     const hashedAdminPassword = await bcrypt.hash(
       "admin123",
       10
@@ -96,29 +87,8 @@ const seedDatabase = async () => {
     });
 
     console.log("👤 Admin created");
-
-    // Count documents
     const userCount = await User.countDocuments();
-    const bookCount = await Book.countDocuments();
-
-    console.log("");
-    console.log("================================");
-    console.log("🎉 DATABASE SEEDED SUCCESSFULLY");
-    console.log("================================");
-    console.log(`Users: ${userCount}`);
-    console.log(`Books: ${bookCount}`);
-    console.log("================================");
-    console.log("");
-
-    console.log("Author login:");
-    console.log("Email: priya.sharma@email.com");
-    console.log("Password: password123");
-
-    console.log("");
-
-    console.log("Admin login:");
-    console.log("Email: admin@bookleaf.com");
-    console.log("Password: admin123");
+    const bookCount = await Book.countDocuments()
 
     await mongoose.connection.close();
 

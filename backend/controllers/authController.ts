@@ -11,11 +11,7 @@ if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is missing in .env");
 }
 
-/*
-|--------------------------------------------------------------------------
-| LOGIN
-|--------------------------------------------------------------------------
-*/
+
 export const login = async (
   req: Request,
   res: Response
@@ -94,11 +90,6 @@ export const login = async (
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET CURRENT USER
-|--------------------------------------------------------------------------
-*/
 export const getMe = async (
   req: Request,
   res: Response
@@ -134,11 +125,7 @@ export const getMe = async (
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| AUTHOR DASHBOARD
-|--------------------------------------------------------------------------
-*/
+
 export const getAuthorDashboard = async (
   req: Request,
   res: Response
@@ -220,11 +207,6 @@ export const getAuthorDashboard = async (
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN DASHBOARD
-|--------------------------------------------------------------------------
-*/
 export const getAdminDashboard = async (
   req: Request,
   res: Response

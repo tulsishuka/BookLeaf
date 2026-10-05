@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
 
 // /* eslint-disable react-hooks/immutability */
@@ -274,6 +275,7 @@
 
 
 
+
 /* eslint-disable react-hooks/immutability */
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -283,6 +285,7 @@ import {
   ShieldCheck,
   Loader2,
   Send,
+  MessageSquare,
 } from "lucide-react";
 
 const API_URL =
@@ -290,6 +293,7 @@ const API_URL =
 
 interface Message {
   _id: string;
+  ticketId?: string;
   senderId: string;
   senderRole: "author" | "admin";
   message: string;
@@ -319,11 +323,19 @@ const AuthorTicketDetail = () => {
 
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  // Reply state
-  const [reply, setReply] = useState("");
+  const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+
+  // Author reply
+  const [reply, setReply] = useState("");
+
+  // Error message
+  const [error, setError] = useState("");
+
+  // ============================================================
+  // FETCH TICKET
+  // ============================================================
 
   useEffect(() => {
     if (!id) return;
@@ -333,29 +345,74 @@ const AuthorTicketDetail = () => {
 
   const fetchTicket = async () => {
     try {
+      setLoading(true);
+      setError("");
+
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`${API_URL}/api/tickets/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      if (!token) {
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      const response = await fetch(
+        `${API_URL}/api/tickets/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      /*
+       * Don't immediately call response.json().
+       * This gives us a better error if the backend returns HTML.
+       */
+
+      const contentType =
+        response.headers.get("content-type");
+
+      if (!contentType?.includes("application/json")) {
+        const text = await response.text();
+
+        console.error(
+          "Backend returned non-JSON response:",
+          text
+        );
+
+        throw new Error(
+          `Server returned an unexpected response (${response.status})`
+        );
+      }
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to load ticket");
+        throw new Error(
+          data.message || "Failed to load ticket"
+        );
       }
 
       setTicket(data.ticket);
       setMessages(data.messages || []);
     } catch (error) {
-      console.error(error);
+      console.error("FETCH TICKET ERROR:", error);
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load ticket"
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  // ============================================================
+  // SEND AUTHOR REPLY
+  // ============================================================
 
   const handleSendReply = async () => {
     if (!id) return;
@@ -363,17 +420,32 @@ const AuthorTicketDetail = () => {
     const trimmedReply = reply.trim();
 
     if (!trimmedReply) {
-      alert("Please enter a message before sending.");
       return;
     }
 
     try {
       setSending(true);
+      setError("");
 
       const token = localStorage.getItem("token");
 
+      if (!token) {
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      /*
+       * IMPORTANT:
+       *
+       * This is NOT /messages.
+       *
+       * Your backend route is:
+       *
+       * POST /api/tickets/:id/reply
+       */
+
       const response = await fetch(
-        `${API_URL}/api/tickets/${id}/messages`,
+        `${API_URL}/api/tickets/${id}/reply`,
         {
           method: "POST",
           headers: {
@@ -386,6 +458,26 @@ const AuthorTicketDetail = () => {
         }
       );
 
+      /*
+       * Handle non-JSON response safely.
+       */
+
+      const contentType =
+        response.headers.get("content-type");
+
+      if (!contentType?.includes("application/json")) {
+        const text = await response.text();
+
+        console.error(
+          "Reply endpoint returned non-JSON response:",
+          text
+        );
+
+        throw new Error(
+          `Server returned an unexpected response (${response.status})`
+        );
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -395,25 +487,44 @@ const AuthorTicketDetail = () => {
       }
 
       /*
-       * If backend returns the newly-created message,
-       * add it immediately to the conversation.
+       * Your backend returns:
+       *
+       * {
+       *   message: "Reply sent successfully",
+       *   data: newMessage,
+       *   ticket
+       * }
+       *
+       * Therefore the new message is data.data
        */
-      if (data.message) {
-        setMessages((prev) => [...prev, data.message]);
+
+      if (data.data) {
+        setMessages((previousMessages) => [
+          ...previousMessages,
+          data.data,
+        ]);
       } else {
         /*
-         * If backend doesn't return the message,
-         * reload the ticket conversation.
+         * Fallback:
+         * If backend doesn't return the new message,
+         * reload the ticket.
          */
         await fetchTicket();
+      }
+
+      /*
+       * Update ticket status from backend response
+       */
+      if (data.ticket) {
+        setTicket(data.ticket);
       }
 
       // Clear textarea
       setReply("");
     } catch (error) {
-      console.error("Reply error:", error);
+      console.error("SEND REPLY ERROR:", error);
 
-      alert(
+      setError(
         error instanceof Error
           ? error.message
           : "Failed to send reply"
@@ -422,6 +533,35 @@ const AuthorTicketDetail = () => {
       setSending(false);
     }
   };
+
+  // ============================================================
+  // ENTER KEY
+  // ============================================================
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    /*
+     * Ctrl + Enter / Cmd + Enter sends message.
+     *
+     * Normal Enter still creates a new line.
+     */
+
+    if (
+      event.key === "Enter" &&
+      (event.ctrlKey || event.metaKey)
+    ) {
+      event.preventDefault();
+
+      if (!sending && reply.trim()) {
+        handleSendReply();
+      }
+    }
+  };
+
+  // ============================================================
+  // DATE FORMAT
+  // ============================================================
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleString("en-IN", {
@@ -433,57 +573,145 @@ const AuthorTicketDetail = () => {
     });
   };
 
+  // ============================================================
+  // STATUS STYLE
+  // ============================================================
+
+  // const getStatusStyle = (status: string) => {
+  //   switch (status) {
+  //     case "Open":
+  //       return "bg-emerald-100 text-emerald-700";
+
+  //     case "In Progress":
+  //       return "bg-amber-100 text-amber-700";
+
+  //     case "Resolved":
+  //       return "bg-blue-100 text-blue-700";
+
+  //     case "Closed":
+  //       return "bg-gray-200 text-gray-600";
+
+  //     default:
+  //       return "bg-gray-100 text-gray-600";
+  //   }
+  // };
+
+  // ============================================================
+  // LOADING
+  // ============================================================
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FDFBF7]">
-        <Loader2
-          className="animate-spin text-[#9C6A3A]"
-          size={28}
-        />
+        <div className="flex flex-col items-center gap-3">
+          <Loader2
+            className="animate-spin text-[#9C6A3A]"
+            size={28}
+          />
+
+          <p className="text-xs text-gray-500">
+            Loading conversation...
+          </p>
+        </div>
       </div>
     );
   }
 
+  // ============================================================
+  // TICKET NOT FOUND
+  // ============================================================
+
   if (!ticket) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] p-8 text-center font-sans text-gray-600">
-        <p>Ticket not found.</p>
+      <div className="min-h-screen bg-[#FDFBF7] p-6 font-sans">
+        <div className="mx-auto max-w-3xl py-20 text-center">
+          <MessageSquare
+            className="mx-auto mb-4 text-gray-300"
+            size={40}
+          />
+
+          <h2 className="font-serif text-xl font-bold text-gray-800">
+            Ticket not found
+          </h2>
+
+          <p className="mt-2 text-sm text-gray-500">
+            {error || "We couldn't find this support ticket."}
+          </p>
+
+          <button
+            onClick={() => navigate("/author/tickets")}
+            className="mt-6 rounded-md bg-black px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-gray-800"
+          >
+            Back to My Tickets
+          </button>
+        </div>
       </div>
     );
   }
+
+  // ============================================================
+  // MAIN
+  // ============================================================
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] p-4 font-sans text-gray-800 sm:p-6 lg:p-10">
       <div className="mx-auto w-full space-y-6">
 
-        {/* TOP NAVIGATION */}
+        {/* =====================================================
+            TOP NAVIGATION
+        ====================================================== */}
+
         <div className="flex flex-col gap-3 text-xs font-medium text-gray-500 sm:flex-row sm:items-center sm:justify-between">
           <button
+            type="button"
             onClick={() => navigate("/author/tickets")}
             className="flex w-fit items-center gap-1.5 text-gray-600 transition hover:text-black"
           >
             <ArrowLeft size={14} />
+
             <span>Back to My Tickets</span>
           </button>
 
           <div className="flex items-center gap-1.5 text-gray-500">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-600" />
+
             <span>Priority Desk Dispatch</span>
           </div>
         </div>
 
-        {/* HEADER */}
+        {/* =====================================================
+            HEADER
+        ====================================================== */}
+
         <div className="relative flex w-full flex-col justify-between gap-6 overflow-hidden rounded-lg bg-[#9c6a3a] p-5 text-white shadow-sm sm:p-6 lg:flex-row lg:items-center lg:p-8">
-          <div className="relative z-10 max-w-3xl space-y-2">
+
+          <div className="relative z-10 max-w-4xl space-y-3">
+
+            {/* LABEL + STATUS */}
+
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-amber-200/90">
                 Support Ticket
               </span>
+
+              <span
+                className={`rounded-full px-2 py-1 text-[10px] font-bold ${
+                  ticket.status === "Open"
+                    ? "bg-white/15 text-white"
+                    : "bg-white/15 text-white"
+                }`}
+              >
+                {ticket.status}
+              </span>
             </div>
 
-            <h1 className="font-serif text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
+            {/* SUBJECT */}
+
+            <h1 className="break-words font-serif text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
               {ticket.subject}
             </h1>
+
+            {/* BOOK */}
 
             <p className="pt-1 text-xs leading-relaxed text-gray-200 sm:text-sm">
               {ticket.bookId
@@ -492,19 +720,50 @@ const AuthorTicketDetail = () => {
                   })`
                 : "Editorial support and tracking history"}
             </p>
+
+            {/* CATEGORY / PRIORITY */}
+
+            <div className="flex flex-wrap gap-2 pt-2">
+              <span className="rounded bg-black/15 px-2.5 py-1 text-[10px] font-medium text-white/90">
+                {ticket.category}
+              </span>
+
+              <span className="rounded bg-black/15 px-2.5 py-1 text-[10px] font-medium text-white/90">
+                Priority: {ticket.priority}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* CONVERSATION */}
+        {/* =====================================================
+            ERROR MESSAGE
+        ====================================================== */}
+
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+            <p className="text-xs text-red-700">
+              {error}
+            </p>
+          </div>
+        )}
+
+        {/* =====================================================
+            CONVERSATION CONTAINER
+        ====================================================== */}
+
         <div className="w-full space-y-6 rounded-lg border border-gray-200/80 bg-[#F8F5EE] p-4 shadow-sm sm:p-6 lg:p-8">
 
-          {/* CONVERSATION HEADER */}
+          {/* ===================================================
+              CONVERSATION HEADER
+          ==================================================== */}
+
           <div className="flex items-center gap-3 border-b border-gray-200/80 pb-4">
+
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EBE5D8] text-gray-700">
               <ShieldCheck size={16} />
             </div>
 
-            <div>
+            <div className="min-w-0">
               <h2 className="font-serif text-base font-bold text-gray-900">
                 Conversation
               </h2>
@@ -515,11 +774,23 @@ const AuthorTicketDetail = () => {
             </div>
           </div>
 
-          {/* MESSAGES */}
+          {/* ===================================================
+              MESSAGES
+          ==================================================== */}
+
           <div className="space-y-6">
+
             {messages.length === 0 ? (
-              <div className="py-10 text-center text-xs italic text-gray-500">
-                No response yet. Our team will get back to you soon.
+              <div className="py-10 text-center">
+                <MessageSquare
+                  className="mx-auto mb-3 text-gray-300"
+                  size={32}
+                />
+
+                <p className="text-xs italic text-gray-500">
+                  No response yet. Our team will get back to
+                  you soon.
+                </p>
               </div>
             ) : (
               messages.map((message, idx) => {
@@ -535,9 +806,13 @@ const AuthorTicketDetail = () => {
                         : "border-transparent bg-[#9C6A3A] text-white"
                     }`}
                   >
+
                     {/* MESSAGE HEADER */}
+
                     <div className="flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
+
                       <div className="flex flex-wrap items-center gap-2">
+
                         {isAdmin ? (
                           <ShieldCheck
                             size={14}
@@ -558,7 +833,7 @@ const AuthorTicketDetail = () => {
                           }`}
                         >
                           {isAdmin
-                            ? "BookLeaf Support (Ticket Server)"
+                            ? "BookLeaf Support"
                             : "You (Author)"}
                         </span>
 
@@ -580,9 +855,10 @@ const AuthorTicketDetail = () => {
                       </span>
                     </div>
 
-                    {/* MESSAGE */}
+                    {/* MESSAGE BODY */}
+
                     <p
-                      className={`whitespace-pre-wrap text-xs leading-relaxed sm:text-sm ${
+                      className={`whitespace-pre-wrap break-words text-xs leading-relaxed sm:text-sm ${
                         isAdmin
                           ? "text-gray-800"
                           : "text-white/95"
@@ -592,6 +868,7 @@ const AuthorTicketDetail = () => {
                     </p>
 
                     {/* MESSAGE FOOTER */}
+
                     <div
                       className={`flex flex-col gap-1 border-t pt-2 text-[10px] sm:flex-row sm:items-center sm:justify-between ${
                         isAdmin
@@ -615,39 +892,74 @@ const AuthorTicketDetail = () => {
             )}
           </div>
 
-          {/* REPLY */}
-          <div className="space-y-4 border-t border-gray-200/80 pt-4">
-            <div>
-              <h3 className="font-serif text-sm font-bold text-gray-900">
-                Reply to Support
-              </h3>
+          {/* ===================================================
+              REPLY SECTION
+          ==================================================== */}
 
-              <p className="mt-1 text-xs text-gray-500">
+          <div className="space-y-4 border-t border-gray-200/80 pt-5">
+
+            <div>
+              <div className="flex items-center gap-2">
+                <MessageSquare
+                  size={15}
+                  className="text-[#9C6A3A]"
+                />
+
+                <h3 className="font-serif text-sm font-bold text-gray-900">
+                  Reply to Support
+                </h3>
+              </div>
+
+              <p className="mt-1 text-xs leading-relaxed text-gray-500">
                 Continue this conversation without creating a
                 new ticket.
               </p>
             </div>
 
+            {/* TEXTAREA */}
+
             <div className="space-y-3">
+
               <textarea
                 rows={4}
                 value={reply}
-                onChange={(e) => setReply(e.target.value)}
-                placeholder="Type your message here... Share any updates or clarification required."
-                disabled={sending}
-                className="w-full resize-y rounded border border-gray-300 bg-white p-3.5 text-xs leading-relaxed text-gray-800 focus:outline-none focus:ring-1 focus:ring-black disabled:cursor-not-allowed disabled:bg-gray-100"
+                onChange={(event) =>
+                  setReply(event.target.value)
+                }
+                onKeyDown={handleKeyDown}
+                disabled={
+                  sending || ticket.status === "Closed"
+                }
+                placeholder={
+                  ticket.status === "Closed"
+                    ? "This ticket is closed."
+                    : "Type your message here... Share any updates or clarification required."
+                }
+                className="w-full resize-y rounded border border-gray-300 bg-white p-3.5 text-xs leading-relaxed text-gray-800 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-black disabled:cursor-not-allowed disabled:bg-gray-100 sm:text-sm"
               />
 
-              <div className="flex flex-col items-stretch justify-between gap-3 pt-1 sm:flex-row sm:items-center">
+              {/* ACTION AREA */}
 
-                <span className="text-[10px] text-gray-400">
-                  Your reply will be added to this ticket.
-                </span>
+              <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
+
+                <div className="text-[10px] text-gray-400">
+                  <span className="hidden sm:inline">
+                    Press Ctrl + Enter to send
+                  </span>
+
+                  <span className="sm:hidden">
+                    Your reply will be added to this ticket.
+                  </span>
+                </div>
 
                 <button
                   type="button"
                   onClick={handleSendReply}
-                  disabled={sending || !reply.trim()}
+                  disabled={
+                    sending ||
+                    !reply.trim() ||
+                    ticket.status === "Closed"
+                  }
                   className="inline-flex w-full items-center justify-center gap-2 rounded bg-[#9C6A3A] px-6 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#85582e] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                   {sending ? (
@@ -656,11 +968,13 @@ const AuthorTicketDetail = () => {
                         size={13}
                         className="animate-spin"
                       />
+
                       <span>Sending...</span>
                     </>
                   ) : (
                     <>
                       <span>Send Reply</span>
+
                       <Send size={13} />
                     </>
                   )}
@@ -668,7 +982,16 @@ const AuthorTicketDetail = () => {
               </div>
             </div>
           </div>
+        </div>
 
+        {/* =====================================================
+            FOOTER INFO
+        ====================================================== */}
+
+        <div className="pb-4 text-center">
+          <p className="text-[10px] text-gray-400">
+            Ticket ID: {ticket._id}
+          </p>
         </div>
       </div>
     </div>

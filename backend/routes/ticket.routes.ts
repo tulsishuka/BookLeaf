@@ -1,6 +1,4 @@
-
 import express from "express";
-
 import {
   createTicket,
   getMyTickets,
@@ -10,6 +8,7 @@ import {
   sendAdminResponse,
   addInternalNote,
   updateTicket,
+  sendAuthorReply,
 } from "../controllers/ticket.controller";
 
 import {
@@ -18,11 +17,6 @@ import {
 } from "../middlewares/authMiddleware";
 
 const router = express.Router();
-
-// ===============================
-// ADMIN ROUTES
-// ===============================
-
 router.get(
   "/admin/all",
   protect,
@@ -37,10 +31,6 @@ router.get(
   requireRole("admin"),
   getAdminTicketById
 );
-
-// ===============================
-// AUTHOR ROUTES
-// ===============================
 
 router.get(
   "/my",
@@ -62,11 +52,6 @@ router.get(
   requireRole("author"),
   getTicketById
 );
-
-// ===============================
-// ADMIN ACTIONS
-// ===============================
-
 router.patch(
   "/:id",
   protect,
@@ -86,6 +71,13 @@ router.post(
   protect,
   requireRole("admin"),
   addInternalNote
+);
+
+router.post(
+  "/:id/reply",
+  protect,
+  requireRole("author"),
+  sendAuthorReply
 );
 
 export default router;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/set-state-in-effect */
 
 import { useEffect, useMemo, useState } from "react";
@@ -8,8 +9,9 @@ import {
   AlertCircle,
   SlidersHorizontal,
   Bot,
-  Sparkles,
+  
   Loader2,
+
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -186,17 +188,6 @@ const AdminDashboard = () => {
     [tickets]
   );
 
-  const highPriorityTickets = useMemo(
-    () =>
-      tickets.filter(
-        (ticket) =>
-          (ticket.priority === "Critical" ||
-            ticket.priority === "High") &&
-          ticket.status !== "Resolved" &&
-          ticket.status !== "Closed"
-      ),
-    [tickets]
-  );
 
   const unassignedTickets = useMemo(
     () =>
@@ -249,31 +240,6 @@ const AdminDashboard = () => {
       "bg-[#F4EBDD] text-[#76552F] border border-[#DECBAA]",
   };
 
-  const attentionTickets = useMemo(() => {
-    const priorityOrder: Record<TicketPriority, number> = {
-      Critical: 1,
-      High: 2,
-      Medium: 3,
-      Low: 4,
-    };
-
-    return [...highPriorityTickets]
-      .sort((a, b) => {
-        const priorityDifference =
-          priorityOrder[a.priority] -
-          priorityOrder[b.priority];
-
-        if (priorityDifference !== 0) {
-          return priorityDifference;
-        }
-
-        return (
-          new Date(a.createdAt).getTime() -
-          new Date(b.createdAt).getTime()
-        );
-      })
-      .slice(0, 5);
-  }, [highPriorityTickets]);
 
   const recentTickets = useMemo(() => {
     return [...tickets]
@@ -284,6 +250,7 @@ const AdminDashboard = () => {
       )
       .slice(0, 6);
   }, [tickets]);
+
 
   const getPriorityClass = (
     priority: TicketPriority
@@ -465,18 +432,12 @@ const AdminDashboard = () => {
             onClick={() =>
               navigate("/admin/tickets")
             }
-            className="px-4 py-2.5 bg-transparent hover:bg-white/10 text-xs font-semibold text-gray-300 rounded border border-[#66594D] transition"
+            className="px-4 py-2.5 bg-[#9c6a3a] hover:bg-white/10 text-xs font-semibold text-gray-300 rounded border border-[#66594D] transition"
           >
             VIEW TICKET QUEUE
           </button>
 
-          <button
-            type="button"
-            className="px-4 py-2.5 bg-[#9c6a3a] hover:bg-[#B27A45] text-white text-xs font-bold rounded flex items-center justify-center gap-1.5 transition"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>RUN AUTONOMIC SWEEP</span>
-          </button>
+         
 
         </div>
 
@@ -485,11 +446,11 @@ const AdminDashboard = () => {
 
       {/* STAT CARDS */}
 
-      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 ">
 
         {/* OPEN */}
 
-        <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-lg p-4 space-y-3">
+        <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
               OPEN TICKETS
@@ -536,7 +497,7 @@ const AdminDashboard = () => {
 
         {/* UNASSIGNED */}
 
-        <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-lg p-4 space-y-3">
+        <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
               UNASSIGNED
@@ -560,7 +521,7 @@ const AdminDashboard = () => {
 
         {/* IN PROGRESS */}
 
-        <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-lg p-4 space-y-3">
+        <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
               IN PROGRESS
@@ -584,7 +545,7 @@ const AdminDashboard = () => {
 
         {/* RESOLVED */}
 
-        <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-lg p-4 space-y-3">
+        <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
               RESOLVED TODAY
@@ -607,7 +568,7 @@ const AdminDashboard = () => {
 
         {/* RESPONSE */}
 
-        <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-lg p-4 space-y-3">
+        <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
               AVG RESPONSE
@@ -631,7 +592,7 @@ const AdminDashboard = () => {
 
       {/* RECENT TICKETS */}
 
-      <div className="bg-[#F8F5EE] border border-[#D8CFC4] rounded-lg p-4 sm:p-6 space-y-4">
+      <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-lg p-4 sm:p-6 space-y-4">
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#DED5CA] pb-3">
 

@@ -4,12 +4,9 @@ import mongoose from "mongoose";
 import Ticket from "../models/Ticket";
 import Message from "../models/Message";
 import Book from "../models/Book";
-import { analyzeTicketWithAI } from "../services/ai.service";
+import { analyzeTicketWithAI, generateConversationDraft } from "../services/ai.service";
 import User from "../models/User";
 
-// ============================================================
-// HELPERS
-// ============================================================
 
 const getAuthorId = (req: Request): string | null => {
   if (!req.user?.authorId) {
@@ -27,154 +24,6 @@ const getUserId = (req: Request): string | null => {
   return req.user.userId;
 };
 
-
-
-// export const createTicket = async (
-//   req: Request,
-//   res: Response
-// ): Promise<Response> => {
-//   try {
-//     const authorId = getAuthorId(req);
-//     const userId = getUserId(req);
-
-//     // -----------------------------------------
-//     // AUTH CHECK
-//     // -----------------------------------------
-
-//     if (!authorId || !userId) {
-//       return res.status(401).json({
-//         message: "Author authentication information is missing",
-//       });
-//     }
-
-//     const {
-//       bookId,
-//       subject,
-//       description,
-//     } = req.body as {
-//       bookId?: string;
-//       subject?: string;
-//       description?: string;
-//     };
-
-//     // -----------------------------------------
-//     // VALIDATE SUBJECT
-//     // -----------------------------------------
-
-//     if (!subject?.trim()) {
-//       return res.status(400).json({
-//         message: "Subject is required",
-//       });
-//     }
-
-//     // -----------------------------------------
-//     // VALIDATE DESCRIPTION
-//     // -----------------------------------------
-
-//     if (!description?.trim()) {
-//       return res.status(400).json({
-//         message: "Description is required",
-//       });
-//     }
-
-//     // -----------------------------------------
-//     // BOOK IS OPTIONAL
-//     //
-//     // Author can:
-//     // 1. Select a book
-//     // 2. Send a General / Account Level query
-//     // -----------------------------------------
-
-//     let validBookId: mongoose.Types.ObjectId | null = null;
-
-//     if (bookId) {
-//       // Check ObjectId
-//       if (!mongoose.Types.ObjectId.isValid(bookId)) {
-//         return res.status(400).json({
-//           message: "Invalid book ID",
-//         });
-//       }
-
-//       // Make sure this book belongs to the logged-in author
-//       const book = await Book.findOne({
-//         _id: bookId,
-//         authorId: authorId,
-//       });
-
-//       if (!book) {
-//         return res.status(403).json({
-//           message: "This book does not belong to your account",
-//         });
-//       }
-
-//       validBookId = new mongoose.Types.ObjectId(bookId);
-//     }
-
-//     // -----------------------------------------
-//     // CREATE TICKET
-//     // -----------------------------------------
-
-//     const ticket = await Ticket.create({
-//       authorId: authorId,
-
-//       // null when General / Account Level
-//       bookId: validBookId,
-
-//       subject: subject.trim(),
-//       description: description.trim(),
-
-//       // AI can update these later
-//       category: "General Inquiry",
-//       priority: "Medium",
-//       status: "Open",
-//     });
-
-//     // -----------------------------------------
-//     // CREATE FIRST MESSAGE
-//     // -----------------------------------------
-//     //
-//     // IMPORTANT:
-//     // senderId = USER _id
-//     // NOT authorId ("AUTH001")
-//     //
-
-//     const firstMessage = await Message.create({
-//       ticketId: ticket._id,
-
-//       // MongoDB User _id
-//       senderId: new mongoose.Types.ObjectId(userId),
-
-//       senderRole: "author",
-//       message: description.trim(),
-//       isInternal: false,
-//     });
-
-//     // -----------------------------------------
-//     // RESPONSE
-//     // -----------------------------------------
-
-//     return res.status(201).json({
-//       message: "Support ticket created successfully",
-
-//       ticket,
-
-//       firstMessage,
-//     });
-//   } catch (error) {
-//     console.error("CREATE TICKET ERROR:", error);
-
-//     return res.status(500).json({
-//       message: "Failed to create support ticket",
-
-//       error:
-//         error instanceof Error
-//           ? error.message
-//           : "Unknown server error",
-//     });
-//   }
-// };
-
-
 export const createTicket = async (
   req: Request,
   res: Response
@@ -182,10 +31,6 @@ export const createTicket = async (
   try {
     const authorId = getAuthorId(req);
     const userId = getUserId(req);
-
-    // -----------------------------------------
-    // AUTH CHECK
-    // -----------------------------------------
 
     if (!authorId || !userId) {
       return res.status(401).json({
@@ -203,29 +48,17 @@ export const createTicket = async (
       description?: string;
     };
 
-    // -----------------------------------------
-    // VALIDATE SUBJECT
-    // -----------------------------------------
-
     if (!subject?.trim()) {
       return res.status(400).json({
         message: "Subject is required",
       });
     }
 
-    // -----------------------------------------
-    // VALIDATE DESCRIPTION
-    // -----------------------------------------
-
     if (!description?.trim()) {
       return res.status(400).json({
         message: "Description is required",
       });
     }
-
-    // -----------------------------------------
-    // GET LOGGED-IN AUTHOR
-    // -----------------------------------------
 
     const author = await User.findById(userId).select(
       "name email authorId role"
@@ -237,23 +70,17 @@ export const createTicket = async (
       });
     }
 
-    // -----------------------------------------
-    // BOOK IS OPTIONAL
-    // -----------------------------------------
-
     let validBookId: mongoose.Types.ObjectId | null = null;
 
     let selectedBook = null;
 
     if (bookId) {
-      // Check ObjectId
       if (!mongoose.Types.ObjectId.isValid(bookId)) {
         return res.status(400).json({
           message: "Invalid book ID",
         });
       }
 
-      // Make sure this book belongs to the logged-in author
       selectedBook = await Book.findOne({
         _id: bookId,
         authorId: authorId,
@@ -261,66 +88,88 @@ export const createTicket = async (
 
       if (!selectedBook) {
         return res.status(403).json({
-          message: "This book does not belong to your account",
+          message:
+            "This book does not belong to your account",
         });
       }
 
       validBookId = selectedBook._id;
     }
 
-    // -----------------------------------------
-    // AI ANALYSIS
-    //
-    // ONE AI CALL
-    //
-    // AI returns:
-    // 1. Category
-    // 2. Priority
-    // 3. Draft response
-    // -----------------------------------------
+    let category:
+      | "Royalty & Payments"
+      | "ISBN & Metadata Issues"
+      | "Printing & Quality"
+      | "Distribution & Availability"
+      | "Book Status & Production Updates"
+      | "General Inquiry" = "General Inquiry";
 
-    const aiResult = await analyzeTicketWithAI({
-      subject: subject.trim(),
-      description: description.trim(),
-      authorName: author.name,
-      bookTitle: selectedBook?.title,
-    });
+    let priority:
+      | "Critical"
+      | "High"
+      | "Medium"
+      | "Low" = "Medium";
 
-    // -----------------------------------------
-    // CREATE TICKET
-    // -----------------------------------------
+    let aiDraftResponse =
+      "Thank you for contacting our support team. " +
+      "We have received your request and will review " +
+      "the issue shortly.";
+
+  
+
+    try {
+      console.log("🤖 Starting AI ticket analysis...");
+
+      const aiResult = await analyzeTicketWithAI({
+        subject: subject.trim(),
+        description: description.trim(),
+        authorName: author.name,
+        bookTitle: selectedBook?.title,
+      });
+
+      // AI succeeded
+      category = aiResult.category;
+      priority = aiResult.priority;
+      aiDraftResponse = aiResult.draftResponse;
+
+      console.log(
+        "✅ AI ticket analysis completed successfully"
+      );
+    } catch (aiError) {
+  
+      console.error(
+        "⚠️ AI analysis failed.",
+        aiError
+      );
+
+      console.log(
+        "⚠️ Creating ticket using fallback values..."
+      );
+
+    }
+
 
     const ticket = await Ticket.create({
       authorId: authorId,
 
-      // null when General / Account Level
       bookId: validBookId,
 
       subject: subject.trim(),
+
       description: description.trim(),
+      category,
 
-      // AI-selected values
-      category: aiResult.category,
-      priority: aiResult.priority,
+      priority,
+      aiCategory: category,
 
-      // Keep original AI suggestions
-      aiCategory: aiResult.category,
-      aiPriority: aiResult.priority,
+      aiPriority: priority,
 
-      // AI-generated draft
-      aiDraftResponse: aiResult.draftResponse,
+      aiDraftResponse,
 
       status: "Open",
     });
 
-    // -----------------------------------------
-    // CREATE FIRST MESSAGE
-    // -----------------------------------------
-    //
-    // senderId = MongoDB User _id
-    // NOT authorId ("AUTH001")
-    //
-
+   
     const firstMessage = await Message.create({
       ticketId: ticket._id,
 
@@ -333,10 +182,7 @@ export const createTicket = async (
       isInternal: false,
     });
 
-    // -----------------------------------------
-    // RESPONSE
-    // -----------------------------------------
-
+ 
     return res.status(201).json({
       message: "Support ticket created successfully",
 
@@ -345,7 +191,11 @@ export const createTicket = async (
       firstMessage,
     });
   } catch (error) {
-    console.error("CREATE TICKET ERROR:", error);
+  
+    console.error(
+      "CREATE TICKET ERROR:",
+      error
+    );
 
     return res.status(500).json({
       message: "Failed to create support ticket",
@@ -357,6 +207,10 @@ export const createTicket = async (
     });
   }
 };
+
+
+
+
 
 export const getMyTickets = async (
   req: Request,
@@ -412,8 +266,6 @@ export const getTicketById = async (
         message: "Invalid ticket ID",
       });
     }
-
-    // Only allow the author to access their own ticket
     const ticket = await Ticket.findOne({
       _id: ticketId,
       authorId: authorId,
@@ -424,8 +276,6 @@ export const getTicketById = async (
         message: "Ticket not found",
       });
     }
-
-    // Only public messages
     const messages = await Message.find({
       ticketId: ticketId,
       isInternal: false,
@@ -493,10 +343,6 @@ export const getAllTickets = async (
   }
 };
 
-// ============================================================
-// ADMIN
-// UPDATE TICKET
-// ============================================================
 
 export const updateTicket = async (
   req: Request,
@@ -569,10 +415,6 @@ export const updateTicket = async (
   }
 };
 
-// ============================================================
-// ADMIN
-// SEND RESPONSE
-// ============================================================
 
 export const sendAdminResponse = async (
   req: Request,
@@ -640,11 +482,6 @@ export const sendAdminResponse = async (
     });
   }
 };
-
-// ============================================================
-// ADMIN
-// ADD INTERNAL NOTE
-// ============================================================
 
 export const addInternalNote = async (
   req: Request,
@@ -762,3 +599,132 @@ export const getAdminTicketById = async (
     });
   }
 };
+
+export const sendAuthorReply = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const authorId = getAuthorId(req);
+    const userId = getUserId(req);
+
+    if (!authorId || !userId) {
+      return res.status(401).json({
+        message: "Author authentication information is missing",
+      });
+    }
+
+    const ticketId = String(req.params.id);
+
+    if (!mongoose.Types.ObjectId.isValid(ticketId)) {
+      return res.status(400).json({
+        message: "Invalid ticket ID",
+      });
+    }
+
+    const { message } = req.body as {
+      message?: string;
+    };
+
+    if (!message?.trim()) {
+      return res.status(400).json({
+        message: "Reply message is required",
+      });
+    }
+
+    const ticket = await Ticket.findOne({
+      _id: ticketId,
+      authorId,
+    }).populate("bookId", "title isbn");
+
+    if (!ticket) {
+      return res.status(404).json({
+        message: "Ticket not found",
+      });
+    }
+
+    if (ticket.status === "Closed") {
+      return res.status(400).json({
+        message:
+          "This ticket is closed and cannot receive new replies",
+      });
+    }
+    const newMessage = await Message.create({
+      ticketId: ticket._id,
+      senderId: new mongoose.Types.ObjectId(userId),
+      senderRole: "author",
+      message: message.trim(),
+      isInternal: false,
+    });
+
+    const conversation = await Message.find({
+      ticketId: ticket._id,
+      isInternal: false,
+    })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    const author = await User.findOne({
+      authorId,
+    }).select("name");
+
+    const authorName = author?.name || "Author";
+
+    const bookTitle =
+      ticket.bookId &&
+      typeof ticket.bookId === "object" &&
+      "title" in ticket.bookId
+        ? String(
+            (ticket.bookId as unknown as { title?: string })
+              .title || ""
+          )
+        : undefined;
+
+
+    let newAIDraft = "";
+
+    try {
+      newAIDraft = await generateConversationDraft({
+        subject: ticket.subject,
+        authorName,
+        bookTitle,
+        messages: conversation.map((msg) => ({
+          senderRole: msg.senderRole,
+          message: msg.message,
+          createdAt: msg.createdAt,
+        })),
+      });
+
+      ticket.aiDraftResponse = newAIDraft;
+
+      await ticket.save();
+    } catch (aiError) {
+      console.error(
+        "AI DRAFT GENERATION FAILED:",
+        aiError
+      );
+
+    }
+
+    return res.status(201).json({
+      message: "Reply sent successfully",
+      data: newMessage,
+      ticket,
+      aiDraftResponse: ticket.aiDraftResponse,
+    });
+  } catch (error) {
+    console.error(
+      "SEND AUTHOR REPLY ERROR:",
+      error
+    );
+
+    return res.status(500).json({
+      message: "Failed to send reply",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Unknown server error",
+    });
+  }
+};
+

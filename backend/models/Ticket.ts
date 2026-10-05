@@ -23,10 +23,8 @@ export type TicketPriority =
   | "Low";
 
 export interface ITicket extends Document {
-  // Same type as Book.authorId and User.authorId
-  authorId: string;
+    authorId: string;
 
-  // Optional because author can send a general/account-level query
   bookId?: mongoose.Types.ObjectId | null;
 
   subject: string;
