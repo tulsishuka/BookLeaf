@@ -18,8 +18,6 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  // Authentication states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -42,17 +40,12 @@ const Login = () => {
         user,
         redirectTo,
       } = response.data;
-
-      // Save JWT token
       localStorage.setItem('token', token);
 
-      // Save logged-in user
       localStorage.setItem(
         'user',
         JSON.stringify(user)
       );
-
-      // Redirect based on role
       navigate(redirectTo);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,8 +65,6 @@ const Login = () => {
     <div className="min-h-screen w-full bg-[#f6f2ea] flex items-center justify-center px-4 py-8 sm:px-8">
 
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        {/* LEFT — Literary Image */}
         <div className="relative min-h-[480px] lg:min-h-[620px] rounded-3xl overflow-hidden">
 
           <img
@@ -81,11 +72,7 @@ const Login = () => {
             alt="BookLeaf literary space"
             className="absolute inset-0 w-full h-full object-cover"
           />
-
-          {/* Soft dark overlay */}
           <div className="absolute inset-0 bg-black/45" />
-
-          {/* Content */}
           <div className="relative z-10 h-full min-h-[480px] lg:min-h-[620px] p-8 sm:p-10 flex flex-col justify-between text-white">
 
             <div>
@@ -122,13 +109,8 @@ const Login = () => {
 
           </div>
         </div>
-
-        {/* RIGHT — Login */}
         <div className="bg-[#fbf8f3] border border-[#e8dfd1] rounded-3xl shadow-lg flex items-center">
-
           <div className="w-full p-7 sm:p-10 lg:p-12">
-
-            {/* Heading */}
             <div className="mb-8">
 
               <p className="text-xs uppercase tracking-[0.2em] text-[#9c6a3a] font-semibold mb-3">
@@ -144,21 +126,15 @@ const Login = () => {
               </p>
 
             </div>
-
-            {/* Form */}
-            <form
+                        <form
               onSubmit={handleLogin}
               className="space-y-5"
             >
-
-              {/* Error message */}
               {error && (
                 <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                   {error}
                 </div>
               )}
-
-              {/* Email */}
               <div>
 
                 <label className="block text-xs font-semibold text-[#574f46] mb-2">
@@ -196,9 +172,7 @@ const Login = () => {
 
                 </div>
               </div>
-
-              {/* Password */}
-              <div>
+                            <div>
 
                 <label className="block text-xs font-semibold text-[#574f46] mb-2">
                   Password
@@ -258,7 +232,6 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* Forgot password */}
               <div className="flex justify-end">
 
                 <button
@@ -270,7 +243,6 @@ const Login = () => {
 
               </div>
 
-              {/* Login Button */}
               <button
                 type="submit"
                 disabled={loading}
@@ -304,8 +276,6 @@ const Login = () => {
               </button>
 
             </form>
-
-            {/* Quote */}
             <div className="mt-10 pt-6 border-t border-[#e8dfd1]">
 
               <div className="flex gap-3">
@@ -328,8 +298,6 @@ const Login = () => {
               </div>
 
             </div>
-
-            {/* Bottom note */}
             <p className="text-center text-[11px] text-[#a09383] mt-8">
               A private space for BookLeaf authors
             </p>
