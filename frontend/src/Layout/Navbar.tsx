@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import screenImg from '../assets/screen.png';
 
@@ -9,10 +9,7 @@ const Navbar = () => {
   return (
     <header className="w-full font-sans">
 
-      {/* Main Top Navigation Bar */}
       <nav className="bg-[#f7f3ec] text-[#2c2825] px-3 sm:px-4 py-2 flex items-center justify-between border-b border-[#e8dfd1]/60">
-
-        {/* Logo */}
         <div className="flex items-center">
           <Link to="/">
             <div className="w-14 h-10 sm:w-16 sm:h-12 flex items-center justify-center overflow-hidden">
@@ -24,8 +21,6 @@ const Navbar = () => {
             </div>
           </Link>
         </div>
-
-        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-medium text-[#6e6357]">
 
           <Link
@@ -44,50 +39,24 @@ const Navbar = () => {
           </Link>
 
        
-          <Link
-  to="/author/dashboard"
-  className="bg-[#22201e] hover:bg-[#11100f] text-[#f7f3ec] text-[10px] sm:text-xs font-bold tracking-wider px-3 sm:px-4 py-2 rounded-sm uppercase transition-colors shadow-sm whitespace-nowrap"
->
-  For Authors
-</Link>
 
           <Link
-             to="/admin/dashboard"
+             to="/"
             className="hover:text-[#1c1917] transition-colors whitespace-nowrap"
           >
             Support
           </Link>
 
         </div>
-
-        {/* Right Section */}
         <div className="flex items-center gap-2 sm:gap-3">
-
-          {/* Sign In */}
-          <Link
-            to="/login"
-            className="hidden sm:block text-sm font-medium text-[#4a423a] hover:text-[#1c1917] px-1 whitespace-nowrap"
-          >
-            Sign In
-          </Link>
-
-          {/* CTA */}
+         
           <Link
             to="/login"
             className="bg-[#22201e] hover:bg-[#11100f] text-[#f7f3ec] text-[10px] sm:text-xs font-bold tracking-wider px-3 sm:px-4 py-2 rounded-sm uppercase transition-colors shadow-sm whitespace-nowrap"
           >
             ENTER AUTHOR PORTAL
           </Link>
-
-          {/* User Profile */}
-          <Link
-            to="/profile"
-            className="hidden sm:flex w-8 h-8 rounded-full bg-[#eae2d5] hover:bg-[#dfd5c5] items-center justify-center text-[#2c2825] transition-colors"
-          >
-            <User className="w-4 h-4" />
-          </Link>
-
-          {/* Mobile Menu */}
+        
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden p-1.5 text-[#2c2825] hover:bg-[#eae2d5] rounded-md transition-colors"
@@ -102,8 +71,6 @@ const Navbar = () => {
 
         </div>
       </nav>
-
-      {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-[#f7f3ec] border-b border-[#e8dfd1] px-4 py-3 flex flex-col gap-2 text-sm font-medium text-[#6e6357]">
 
@@ -116,23 +83,17 @@ const Navbar = () => {
           </Link>
 
           <Link
-            to="/about"
+            to="/About"
             onClick={() => setIsMobileMenuOpen(false)}
             className="text-[#1c1917] font-semibold py-1 border-l-2 border-[#8c6d48] pl-2"
           >
             About & Process
           </Link>
 
-          <Link
-            to="/authors"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="hover:text-[#1c1917] transition-colors py-1"
-          >
-            For Authors
-          </Link>
+         
 
           <Link
-            to="/support"
+            to="/"
             onClick={() => setIsMobileMenuOpen(false)}
             className="hover:text-[#1c1917] transition-colors py-1"
           >
@@ -140,31 +101,11 @@ const Navbar = () => {
           </Link>
 
           <div className="pt-2 border-t border-[#e8dfd1] flex items-center justify-between sm:hidden">
-
-            <Link
-              to="/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="text-sm font-medium text-[#4a423a] hover:text-[#1c1917]"
-            >
-              Sign In
-            </Link>
-
-            <Link
-              to="/profile"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="w-8 h-8 rounded-full bg-[#eae2d5] flex items-center justify-center text-[#2c2825]"
-            >
-              <User className="w-4 h-4" />
-            </Link>
-
-          </div>
+     </div>
         </div>
       )}
-
-      {/* Bottom Sub-bar */}
       <div className="bg-[#eae2d5] text-[#706353] px-3 sm:px-4 py-1.5 flex flex-col md:flex-row items-center justify-between text-xs font-medium tracking-wide border-t border-[#dfd5c5] gap-1">
 
-        {/* Left Side */}
         <div className="flex items-center gap-1.5 text-center md:text-left flex-wrap justify-center md:justify-start">
 
           <span className="w-1.5 h-1.5 rounded-full bg-[#9c6a3a] inline-block shrink-0"></span>
@@ -182,8 +123,6 @@ const Navbar = () => {
           </span>
 
         </div>
-
-        {/* Right Side */}
         <div className="flex items-center gap-1.5 text-[10px] text-center md:text-right">
 
           <span className="text-[#968775] font-normal hidden sm:inline">
