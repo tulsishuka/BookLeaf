@@ -42,7 +42,7 @@ interface Ticket {
 }
 
 const API_URL =
-  import.meta.env.VITE_API_URL || 'https://bookleaf-1-backend.onrender.com/';
+  import.meta.env.VITE_API_URL || 'https://bookleaf-1-backend.onrender.com';
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '';
