@@ -110,7 +110,6 @@ const LiteraryLifecycle = () => {
 
           <div className="max-w-2xl">
 
-            {/* Section Label */}
             <p
               className="
                 text-[11px]
@@ -127,8 +126,6 @@ const LiteraryLifecycle = () => {
               <span>→0</span>
               <span>THE LITERARY LIFECYCLE</span>
             </p>
-
-            {/* Heading */}
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-medium text-[#1c1917] tracking-tight leading-tight mb-3">
               {headingWords.map((word, index) => (
                 <span
@@ -139,8 +136,6 @@ const LiteraryLifecycle = () => {
                 </span>
               ))}
             </h2>
-
-            {/* Description */}
             <p className="text-xs sm:text-base text-[#6e6357] font-normal leading-relaxed">
               {descriptionWords.map((word, index) => (
                 <span
@@ -153,10 +148,7 @@ const LiteraryLifecycle = () => {
             </p>
 
           </div>
-        </div>
-
-        {/* Milestone Cards */}
-        <div
+        </div>        <div
           className="
             flex md:grid
             grid-cols-1 md:grid-cols-2 lg:grid-cols-4
@@ -198,8 +190,6 @@ const LiteraryLifecycle = () => {
               >
 
                 <div>
-
-                  {/* Number + Timeline */}
                   <div className="flex items-center justify-between mb-4">
 
                     <span className="text-2xl font-serif font-bold text-[#8c7457]">
@@ -211,30 +201,21 @@ const LiteraryLifecycle = () => {
                     </span>
 
                   </div>
-
-                  {/* Icon */}
                   <div className="w-9 h-9 rounded bg-[#f4efe6]/90 border border-[#ded1be] flex items-center justify-center text-[#8c7457] mb-5 shadow-sm">
                     <IconComponent className="w-4 h-4" />
                   </div>
-
-                  {/* Category */}
                   <span className="block text-[10px] font-bold tracking-[0.15em] text-[#a09383] uppercase mb-1.5">
                     {item.category}
                   </span>
-
-                  {/* Title */}
                   <h3 className="text-lg sm:text-xl font-serif font-bold text-[#1c1917] mb-2">
                     {item.title}
                   </h3>
 
-                  {/* Description */}
                   <p className="text-xs text-[#6e6357] leading-relaxed mb-5 font-normal">
                     {item.description}
                   </p>
 
                 </div>
-
-                {/* Deliverable */}
                 <div className="pt-3 border-t border-[#ded1be]/60 flex items-center gap-2 mt-auto">
 
                   <span className="w-1.5 h-1.5 rounded-full bg-[#8c7457] shrink-0" />
