@@ -73,7 +73,6 @@ const Home = () => {
 
       <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center text-center">
 
-        {/* Badge */}
         <div
           className="
             inline-flex items-center gap-2
@@ -98,7 +97,6 @@ const Home = () => {
           </span>
         </div>
 
-        {/* Heading */}
         <h1
           className="
             text-4xl
@@ -117,7 +115,6 @@ const Home = () => {
           </span>
         </h1>
 
-        {/* Description */}
         <p
           className="
             max-w-2xl
@@ -134,7 +131,6 @@ const Home = () => {
           self-publishing should never mean solitary publishing.
         </p>
 
-        {/* Information pill */}
         <div
           className="
             inline-flex
