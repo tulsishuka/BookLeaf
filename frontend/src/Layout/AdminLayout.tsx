@@ -19,18 +19,12 @@ interface NavigationItem {
 
 const AdminLayout = () => {
   const navigate = useNavigate();
-
-  // ================= LOGOUT =================
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 
     navigate('/login', { replace: true });
   };
-
-  // ================= NAVIGATION =================
-
   const navigationItems: NavigationItem[] = [
     {
       name: 'Overview',
@@ -50,48 +44,12 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen w-full flex bg-[#FDFBF7] text-gray-800 font-sans overflow-x-hidden">
-
-      {/* ================================================= */}
-      {/* DESKTOP / TABLET SIDEBAR */}
-      {/* ================================================= */}
-
-      <aside
-        className="
-          hidden
-          md:flex
-          fixed
-          left-0
-          top-0
-          z-40
-          w-56
-          lg:w-64
-          h-screen
-          bg-[#F8F5EE]
-          border-r
-          border-gray-200/80
-          flex-col
-          justify-between
-          flex-shrink-0
-          select-none
-        "
-      >
-
-        {/* ================================================= */}
-        {/* TOP SECTION */}
-        {/* ================================================= */}
-
+    <aside className="hidden md:flex fixed left-0 top-0 z-40 w-56 lg:w-64 h-screen bg-[#F8F5EE] border-r border-gray-200/80 flex-col justify-between flex-shrink-0 select-none">
         <div className="p-4 lg:p-5 space-y-5 lg:space-y-6 overflow-y-auto">
-
-          {/* LOGO & BRAND */}
-
           <div className="flex items-center justify-between pb-4 border-b border-gray-200/80">
 
             <div className="flex items-center gap-2.5 min-w-0">
-
-            
-
-              <div className="min-w-0">
-
+     <div className="min-w-0">
                 <h1 className="font-serif font-bold text-lg text-gray-900 leading-tight">
                  ADMIN PORTAL
                 </h1>
@@ -101,23 +59,8 @@ const AdminLayout = () => {
 
             </div>
 
-          </div>
-
-          {/* ================================================= */}
-          {/* OPERATIONS CONSOLE */}
-          {/* ================================================= */}
-
-          <div>
-
-          
-              
-
-          </div>
-
-          {/* ================================================= */}
-          {/* NAVIGATION */}
-          {/* ================================================= */}
-
+          </div><div>
+   </div>
           <nav className="space-y-1">
 
             {navigationItems.map((item) => {
@@ -150,8 +93,6 @@ const AdminLayout = () => {
                   }
                 >
 
-                  {/* ICON + NAME */}
-
                   <div className="flex items-center gap-3 min-w-0">
 
                     <Icon className="w-4 h-4 flex-shrink-0" />
@@ -161,9 +102,6 @@ const AdminLayout = () => {
                     </span>
 
                   </div>
-
-                  {/* BADGE */}
-
                   {item.badge && (
                     <span
                       className={`
@@ -192,11 +130,6 @@ const AdminLayout = () => {
           </nav>
 
         </div>
-
-        {/* ================================================= */}
-        {/* BOTTOM ADMIN SECTION */}
-        {/* ================================================= */}
-
         <div
           className="
             p-3
@@ -243,11 +176,6 @@ const AdminLayout = () => {
         </div>
 
       </aside>
-
-      {/* ================================================= */}
-      {/* MOBILE BOTTOM NAVIGATION */}
-      {/* ================================================= */}
-
       <nav
         className="
           md:hidden
@@ -405,11 +333,6 @@ const AdminLayout = () => {
         </div>
 
       </nav>
-
-      {/* ================================================= */}
-      {/* MAIN CONTENT */}
-      {/* ================================================= */}
-
       <main
         className="
           min-h-screen
