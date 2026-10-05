@@ -80,9 +80,6 @@ const TicketQueue = () => {
   const [priorityFilter, setPriorityFilter] =
     useState<'All' | TicketPriority>('All');
 
-  // ==================================================
-  // FETCH ALL USER QUERIES
-  // ==================================================
 
   const fetchAllTickets = async () => {
     try {
@@ -158,10 +155,7 @@ const TicketQueue = () => {
     fetchAllTickets();
   }, []);
 
-  // ==================================================
-  // FILTER
-  // ==================================================
-
+ 
   const filteredTickets = tickets.filter((ticket) => {
     const searchValue =
       search.trim().toLowerCase();
@@ -199,10 +193,6 @@ const TicketQueue = () => {
     );
   });
 
-  // ==================================================
-  // DATE
-  // ==================================================
-
   const formatDate = (date?: string) => {
     if (!date) return '—';
 
@@ -228,9 +218,6 @@ const TicketQueue = () => {
     );
   };
 
-  // ==================================================
-  // PRIORITY STYLE
-  // ==================================================
 
   const getPriorityStyle = (
     priority: TicketPriority
@@ -253,10 +240,6 @@ const TicketQueue = () => {
     }
   };
 
-  // ==================================================
-  // STATUS STYLE
-  // ==================================================
-
   const getStatusStyle = (
     status: TicketStatus
   ) => {
@@ -278,9 +261,6 @@ const TicketQueue = () => {
     }
   };
 
-  // ==================================================
-  // LOADING
-  // ==================================================
 
   if (loading) {
     return (
@@ -315,10 +295,6 @@ const TicketQueue = () => {
     );
   }
 
-  // ==================================================
-  // ERROR
-  // ==================================================
-
   if (error) {
     return (
       <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-5 sm:p-8">
@@ -352,16 +328,9 @@ const TicketQueue = () => {
     );
   }
 
-  // ==================================================
-  // PAGE
-  // ==================================================
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1C1C1C]">
-
-      {/* ================================================= */}
-      {/* HEADER */}
-      {/* ================================================= */}
 
       <div className="border-b border-[#D8CFC4] bg-[#FDFBF7]">
 
@@ -406,33 +375,18 @@ const TicketQueue = () => {
 
       </div>
 
-      {/* ================================================= */}
-      {/* CONTENT */}
-      {/* ================================================= */}
 
       <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 max-w-[1800px] mx-auto">
-
-        {/* ================================================= */}
-        {/* STATS */}
-        {/* ================================================= */}
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-7">
-
-          {/* TOTAL */}
-
-          <div className="group bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
-
-            <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
-              Total Queries
-            </p>
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-7">
+ <div className="group bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
+ <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
+         </p>
 
             <div className="flex items-end justify-between gap-3 mt-3">
-
-              <p className="text-3xl sm:text-4xl font-serif font-bold text-[#1C1C1C]">
+<p className="text-3xl sm:text-4xl font-serif font-bold text-[#1C1C1C]">
                 {tickets.length}
               </p>
-
-              <span className="w-9 h-9 rounded-full bg-[#F2EDE4] flex items-center justify-center">
+ <span className="w-9 h-9 rounded-full bg-[#F2EDE4] flex items-center justify-center">
                 <Inbox className="w-4 h-4 text-[#9C6A3A]" />
               </span>
 
@@ -443,8 +397,6 @@ const TicketQueue = () => {
             </p>
 
           </div>
-
-          {/* OPEN */}
 
           <div className="group bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
@@ -475,8 +427,6 @@ const TicketQueue = () => {
 
           </div>
 
-          {/* CRITICAL */}
-
           <div className="group bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
             <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
@@ -505,8 +455,6 @@ const TicketQueue = () => {
             </p>
 
           </div>
-
-          {/* IN PROGRESS */}
 
           <div className="group bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-5 sm:p-6 hover:border-[#BCA993] transition">
 
@@ -539,15 +487,10 @@ const TicketQueue = () => {
 
         </div>
 
-        {/* ================================================= */}
-        {/* SEARCH + FILTER */}
-        {/* ================================================= */}
 
         <div className="bg-[#F8F5EE] border border-[#9c6a3a] rounded-2xl p-4 sm:p-5 mb-7">
 
           <div className="flex flex-col lg:flex-row gap-3">
-
-            {/* SEARCH */}
 
             <div className="relative flex-1">
 
@@ -564,9 +507,6 @@ const TicketQueue = () => {
               />
 
             </div>
-
-            {/* STATUS */}
-
             <div className="flex items-center gap-2">
 
               <div className="hidden sm:flex w-9 h-9 rounded-lg bg-[#F2EDE4] items-center justify-center">
@@ -609,8 +549,6 @@ const TicketQueue = () => {
 
             </div>
 
-            {/* PRIORITY */}
-
             <select
               value={priorityFilter}
               onChange={(e) =>
@@ -648,11 +586,6 @@ const TicketQueue = () => {
           </div>
 
         </div>
-
-        {/* ================================================= */}
-        {/* SUBMITTED QUERIES HEADER */}
-        {/* ================================================= */}
-
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
 
           <div>
@@ -676,11 +609,6 @@ const TicketQueue = () => {
           </div>
 
         </div>
-
-        {/* ================================================= */}
-        {/* TICKETS */}
-        {/* ================================================= */}
-
         <div className="space-y-3">
 
           {filteredTickets.length === 0 ? (
@@ -719,9 +647,6 @@ const TicketQueue = () => {
               >
 
                 <div className="flex flex-col xl:flex-row xl:items-center gap-5 xl:gap-6">
-
-                  {/* QUERY */}
-
                   <div className="flex-1 min-w-0">
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -765,9 +690,6 @@ const TicketQueue = () => {
                     </div>
 
                   </div>
-
-                  {/* AUTHOR */}
-
                   <div className="xl:w-48 border-t xl:border-t-0 xl:border-l border-[#E5DED4] pt-4 xl:pt-0 xl:pl-5">
 
                     <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
@@ -783,9 +705,6 @@ const TicketQueue = () => {
                     </p>
 
                   </div>
-
-                  {/* BOOK */}
-
                   <div className="xl:w-52 border-t xl:border-t-0 xl:border-l border-[#E5DED4] pt-4 xl:pt-0 xl:pl-5">
 
                     <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#99938A]">
@@ -813,9 +732,6 @@ const TicketQueue = () => {
                     )}
 
                   </div>
-
-                  {/* DATE */}
-
                   <div className="xl:w-32 border-t xl:border-t-0 xl:border-l border-[#E5DED4] pt-4 xl:pt-0 xl:pl-5 xl:text-right">
 
                     <div className="flex xl:justify-end items-center gap-1.5 text-[#99938A]">
@@ -834,16 +750,10 @@ const TicketQueue = () => {
 
                   </div>
 
-                  {/* ARROW */}
-
                   <div className="hidden xl:flex w-9 h-9 rounded-full bg-[#F2EDE4] items-center justify-center flex-shrink-0 group-hover:bg-[#2B241E] transition-colors">
-
                     <ChevronRight className="w-4 h-4 text-[#99938A] group-hover:text-white transition-colors" />
-
                   </div>
-
                   <ChevronRight className="xl:hidden w-5 h-5 text-[#B8B1A8] group-hover:text-[#9C6A3A] transition flex-shrink-0" />
-
                 </div>
 
               </button>
