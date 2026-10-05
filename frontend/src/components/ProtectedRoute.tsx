@@ -9,8 +9,6 @@ const ProtectedRoute = ({
 }: ProtectedRouteProps) => {
   const token = localStorage.getItem("token");
   const userString = localStorage.getItem("user");
-
-  // User is not logged in
   if (!token || !userString) {
     return <Navigate to="/login" replace />;
   }
@@ -25,8 +23,6 @@ const ProtectedRoute = ({
 
     return <Navigate to="/login" replace />;
   }
-
-  // User has the wrong role
   if (allowedRole && user.role !== allowedRole) {
     if (user.role === "author") {
       return <Navigate to="/author/dashboard" replace />;
